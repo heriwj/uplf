@@ -1,0 +1,75 @@
+Proposed deployment Production
+1.       Reconciliation Report email id addition in excel sheet
+2.       Hyperlink Removal from email body html for all products 
+3.       CC duplicate password
+4.       Summary Report
+5.       Banner changes for consolidate
+6.		 Rename cc backbilling
+
+1 :  CC duplicate password
+Go to  : cd /home/ccmsIdx/ETL 
+Rename : mv ETL_MASTER_BCC_0.1 ETL_MASTER_BCC_0.1_03082024
+Copy ETL from  : cd  /Prod_Deployment_3Aug2024\cc_duplicate_password
+Paste to :  cp -r ETL_MASTER_BCC_0 /home/ccmsIdx/ETL
+Give Permissons : 
+cd /home/ccmsIdx/ETL/ETL_MASTER_BCC_0.1/ETL_MASTER_BCC
+ls
+chmod 755 ETL_MASTER_BCC_run.sh
+
+
+
+2. Summary Report
+Go to  : cd /u01/tomcat9/webapps/CCMSMAYBANK/WEB-INF/classes/com/seeinfobiz/click/daoImpl/SummaryFuctionReports
+Rename : mv SummaryFuctionReportDAOImpl.class SummaryFuctionReportDAOImpl.class_03082024
+Copy File from  :  cd /Prod_Deployment_3Aug2024/summary_function
+Paste to :  cp SummaryFuctionReportDAOImpl.class /u01/tomcat9/webapps/CCMSMAYBANK/WEB-INF/classes/com/seeinfobiz/click/daoImpl/SummaryFuctionReports
+
+3. Reconciliation Report email id addition
+Go to  : cd /u01/tomcat9/webapps/CCMSMAYBANK/WEB-INF/classes/com/seeinfobiz/click/action/reportsReconsillation
+Rename : mv ReconsillationReportController.class ReconsillationReportController.class_03082024
+Copy File from  : cd  /Prod_Deployment_3Aug2024/recon_email_id_addition
+Paste to : cp ReconsillationReportController.class /u01/tomcat9/webapps/CCMSMAYBANK/WEB-INF/classes/com/seeinfobiz/click/action/reportsReconsillation
+
+4.Banner Images
+Go to  : cd /home/ccmsIdx/Images
+Rename images if already exist
+Copy Images from  :  cd /Prod_Deployment_3Aug2024/banner_images
+Paste to : cp 630x140-bottom.jpg 630x140-top.jpg  /home/ccmsIdx/Images
+
+5.SRT Only banner Changes
+Go to  : cd /home/ccmsIdx/CLICK-PSS-10/AddStatement/CONSOLIDATED_STATEMENT/CONSOLIDATEDSTATEMENT/02092023/SRT
+Rename : mv Consolidated.srt Consolidated.srt_03082024
+Copy File from  : cd  /Prod_Deployment_3Aug2024/SRT
+Paste to : cp Consolidated.srt  /home/ccmsIdx/CLICK-PSS-10/AddStatement/CONSOLIDATED_STATEMENT/CONSOLIDATEDSTATEMENT/02092023/SRT
+
+6.HyperLink Removal from Email Body
+Go to  : cd /home/ccmsIdx/CLICK-PSS-10/Email/1/EmailRuleNonPayroll/EmailBody
+Rename : mv MaybankConsolidatedEmailer.html MaybankConsolidatedEmailer.html_03082024
+Copy File from  : cd  /Prod_Deployment_3Aug2024/hyperlink_removal/BodyEmail/1/EmailRuleNonPayroll/EmailBody
+Paste to : cp MaybankConsolidatedEmailer.html /home/ccmsIdx/CLICK-PSS-10/Email/1/EmailRuleNonPayroll/EmailBody
+
+Go to  : cd /home/ccmsIdx/CLICK-PSS-10/Email/1/EmailRulePayroll/EmailBody
+Rename : mv MaybankConsolidatedPayrollEmailer.html MaybankConsolidatedPayrollEmailer.html_03082024
+Copy File from  :  cd /Prod_Deployment_3Aug2024/hyperlink_removal/BodyEmail/1/EmailRulePayroll/EmailBody
+Paste to : cp MaybankConsolidatedPayrollEmailer.html  /home/ccmsIdx/CLICK-PSS-10/Email/1/EmailRulePayroll/EmailBody
+
+
+Go to  : cd /home/ccmsIdx/CLICK-PSS-10/Email/2/CreditCardEmailRule/EmailBody
+Rename : mv MaybankCreditCardEmailer.html MaybankCreditCardEmailer.html_03082024
+Copy File from  : cd /Prod_Deployment_3Aug2024/hyperlink_removal/BodyEmail/2/CreditCardEmailRule/EmailBody
+Paste to : cp MaybankCreditCardEmailer.html /home/ccmsIdx/CLICK-PSS-10/Email/2/CreditCardEmailRule/EmailBody  
+
+Go to  : cd /home/ccmsIdx/CLICK-PSS-10/Email/3/PersonalLoanEmailRule/EmailBody
+Rename : mv MaybankPersonalLoanEmailer.html MaybankPersonalLoanEmailer.html_03082024
+Copy File from  : cd  /Prod_Deployment_3Aug2024/hyperlink_removal/BodyEmail/3/PersonalLoanEmailRule/EmailBody
+Paste to : cp MaybankPersonalLoanEmailer.html /home/ccmsIdx/CLICK-PSS-10/Email/3/PersonalLoanEmailRule/EmailBody
+
+Go to  : cd /home/ccmsIdx/CLICK-PSS-10/Email/4/MortgageNotificationLetterEmailRule/EmailBody
+Rename : mv MaybankMortgageEmailer.html MaybankMortgageEmailer.html_03082024
+Copy File from  : cd  /Prod_Deployment_3Aug2024/hyperlink_removal/BodyEmail/4/MortgageNotificationLetterEmailRule/EmailBody
+Paste to :  cp MaybankMortgageEmailer.html /home/ccmsIdx/CLICK-PSS-10/Email/4/MortgageNotificationLetterEmailRule/EmailBody
+
+7. rename ccbackbilling to MaybankBackBilling2405
+
+Go to  : cd /home/ccmsIdx/ccbackbilling
+Rename : mv MaybankBackBillingJan2023.pdf MaybankBackBilling2405.pdf
