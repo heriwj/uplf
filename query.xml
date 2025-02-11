@@ -1,0 +1,2859 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<registry>
+<Version>4.4</Version>
+<query name="qCredit_Card_Dtl" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<table>
+<alias><![CDATA[a]]></alias>
+<name><![CDATA[DXI_CREDIT_CARD_DTLS]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[15]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<table>
+<alias><![CDATA[b]]></alias>
+<name><![CDATA[DXI_CREDIT_CARD_TRNS]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[497]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[select
+NULL as TRANSACTION_DATE,
+NULL as POST_DATE,
+CASE WHEN NAME_KETERANGAN IS NOT NULL THEN
+SUBSTR(ACCOUNT_NUMBER,1,7) || 'XX XXXX ' || SUBSTR(ACCOUNT_NUMBER,-4)|| CHR(32) || NAME_KETERANGAN ||   '                                              BALANCE OF LAST MONTH'
+ELSE NULL END AS MERCHANT_NAME,
+null as AMOUNT_FOREIGN_CURRENCY,
+CASE WHEN SUBSTR('                              '||balance_of_last_month,-2)='CR'
+THEN SUBSTR('                              '||balance_of_last_month,1,LENGTH('                              '||balance_of_last_month)-2)||' CR' ELSE '                              '||balance_of_last_month||RPAD(' ',3) 
+ END AS TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+--'                                                                    '||balance_of_last_month||RPAD(' ',3)  as TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+NO_AMPLOP_WAYBILL,
+PRIMARY_CARD,
+ACCOUNT_NO,
+0 as TRANSACTION_ORDER
+from DXI_CREDIT_CARD_DTLS where IXPRCS = $(PROCESS_ID)  and IXPRDT = $(PRODUCT_ID)  and PRIMARY_CARD_NO = $(PRIMARY_CARD_NO) AND CARD_TYPE=$(CARD_TYPE)
+
+UNION ALL
+--TRANSACTIONS
+select  
+B.TRANSACTION_DATE,
+B.POST_DATE,
+CASE WHEN  B.EXCHANGE_RATE_1 IS NOT NULL THEN B.MERCHANT_NAME || CHR(10) || REPLACE(B.EXCHANGE_RATE_1,'EXCHANGE RATE :','EXCHANGE RATE RP:') ELSE B.MERCHANT_NAME END AS MERCHANT_NAME,
+B.AMOUNT_FOREIGN_CURRENCY,
+CASE WHEN SUBSTR(B.TOTAL_AMOUNT_DOMESTIC_CURRENCY,-2)='CR' 
+THEN SUBSTR(B.TOTAL_AMOUNT_DOMESTIC_CURRENCY,1,LENGTH(B.TOTAL_AMOUNT_DOMESTIC_CURRENCY)-2)||' CR' ELSE B.TOTAL_AMOUNT_DOMESTIC_CURRENCY||RPAD(' ',3) 
+ END AS TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+B.NO_AMPLOP_WAYBILL,
+A.PRIMARY_CARD,
+B.ACCOUNT_NO,
+B.TRANSACTION_ORDER
+from DXI_CREDIT_CARD_TRNS B JOIN DXI_CREDIT_CARD_DTLS A 
+on A.IXPRCS=B.IXPRCS AND A.IXPRDT=B.IXPRDT AND A.NO_AMPLOP_WAYBILL=B.NO_AMPLOP_WAYBILL AND A.ACCOUNT_NO=B.ACCOUNT_NO
+where A.IXPRCS= $(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.PRIMARY_CARD_NO = $(PRIMARY_CARD_NO) AND CARD_TYPE=$(CARD_TYPE)
+
+UNION ALL
+--SUBTOTAL WHEN NO TRANS
+select
+NULL as TRANSACTION_DATE,
+NULL as POST_DATE,
+LPAD('SUB TOTAL:',41,' ') AS MERCHANT_NAME,
+null as AMOUNT_FOREIGN_CURRENCY,
+CASE WHEN SUBSTR(SUBTOTAL_AMOUNT,-2)='CR' 
+THEN SUBSTR(SUBTOTAL_AMOUNT,1,LENGTH(SUBTOTAL_AMOUNT)-2)||' CR' ELSE SUBTOTAL_AMOUNT||RPAD(' ',3) 
+ END as TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+NO_AMPLOP_WAYBILL,
+PRIMARY_CARD,
+ACCOUNT_NO,
+ROW_NUMBER() OVER (ORDER BY PRIMARY_CARD)+9999999 as TRANSACTION_ORDER
+from DXI_CREDIT_CARD_DTLS where IXPRCS = $(PROCESS_ID)  and IXPRDT = $(PRODUCT_ID)  and PRIMARY_CARD_NO = $(PRIMARY_CARD_NO) AND $(CARD_TYPE)='PS' 
+
+
+UNION ALL
+--TOTAL
+select
+NULL as TRANSACTION_DATE,
+NULL as POST_DATE,
+LPAD('TOTAL:',41,' ') AS MERCHANT_NAME,
+null as AMOUNT_FOREIGN_CURRENCY,
+CASE WHEN SUBSTR(NEW_BALANCE_SUMMARY,-2)='CR' 
+THEN SUBSTR(NEW_BALANCE_SUMMARY,1,LENGTH(NEW_BALANCE_SUMMARY)-2)||' CR' ELSE NEW_BALANCE_SUMMARY||RPAD(' ',3) 
+ END  as TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+NO_AMPLOP_WAYBILL,
+null as PRIMARY_CARD,
+ACCOUNT_NO,
+100000000 as TRANSACTION_ORDER
+from DXI_CREDIT_CARD_DTLS where IXPRCS = $(PROCESS_ID)  and IXPRDT = $(PRODUCT_ID)  and PRIMARY_CARD_NO = $(PRIMARY_CARD_NO) AND CARD_TYPE=$(CARD_TYPE) and NEW_BALANCE_SUMMARY is not null
+
+
+
+UNION ALL
+--END OF STATEMENT
+select
+NULL as TRANSACTION_DATE,
+NULL as POST_DATE,
+LPAD('END OF STATEMENT',41,' ') AS MERCHANT_NAME,
+null as AMOUNT_FOREIGN_CURRENCY,
+NULL as TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+NULL AS NO_AMPLOP_WAYBILL,
+NULL AS PRIMARY_CARD,
+NULL AS ACCOUNT_NO,
+100000001 as TRANSACTION_ORDER
+from DXI_CREDIT_CARD_DTLS where IXPRCS = $(PROCESS_ID)  and IXPRDT = $(PRODUCT_ID)  and PRIMARY_CARD_NO = $(PRIMARY_CARD_NO) AND CARD_TYPE=$(CARD_TYPE) 
+GROUP BY MERCHANT_NAME
+
+UNION ALL
+--USERMESSAGE
+select
+NULL as TRANSACTION_DATE,
+NULL as POST_DATE,
+USER_MESSAGE_2_1 || CHR(10) || USER_MESSAGE_2_2 || CHR(10) || USER_MESSAGE_2_3 AS MERCHANT_NAME,
+null as AMOUNT_FOREIGN_CURRENCY,
+NULL as TOTAL_AMOUNT_DOMESTIC_CURRENCY,
+NULL as NO_AMPLOP_WAYBILL,
+NULL as PRIMARY_CARD,
+NULL AS ACCOUNT_NO,
+100000002 as TRANSACTION_ORDER
+from DXI_CREDIT_CARD_DTLS where IXPRCS = $(PROCESS_ID)  and IXPRDT = $(PRODUCT_ID)  and PRIMARY_CARD_NO = $(PRIMARY_CARD_NO) AND CARD_TYPE=$(CARD_TYPE) AND PRIMARY_CARD='1'
+GROUP BY USER_MESSAGE_2_1,USER_MESSAGE_2_2,USER_MESSAGE_2_3
+ORDER BY 7,8,9]]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[TRANSACTION_DATE]]>
+</column>
+<column type="string">
+<![CDATA[POST_DATE]]>
+</column>
+<column type="string">
+<![CDATA[MERCHANT_NAME]]>
+</column>
+<column type="string">
+<![CDATA[AMOUNT_FOREIGN_CURRENCY]]>
+</column>
+<column type="string">
+<![CDATA[TOTAL_AMOUNT_DOMESTIC_CURRENCY]]>
+</column>
+<column type="string">
+<![CDATA[NO_AMPLOP_WAYBILL]]>
+</column>
+<column type="double">
+<![CDATA[PRIMARY_CARD]]>
+</column>
+<column type="string">
+<![CDATA[ACCOUNT_NO]]>
+</column>
+<column type="double">
+<![CDATA[TRANSACTION_ORDER]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="CARD_TYPE" source="Query: qCredit_Card_Dtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CARD_TYPE" xtype="string">
+</variable>
+<variable  name="PRIMARY_CARD_NO" source="Query: qCredit_Card_Dtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRIMARY_CARD_NO" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: qCredit_Card_Dtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: qCredit_Card_Dtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="personal_loan" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<table>
+<alias><![CDATA[A]]></alias>
+<name><![CDATA[DXI_PERSONAL_LOAN_KTA_DTLS]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[15]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<table>
+<alias><![CDATA[B]]></alias>
+<name><![CDATA[DXI_GIRO_MASTER_BRK]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[250]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<table>
+<alias><![CDATA[C]]></alias>
+<name><![CDATA[KTA_MSTR_PLAN_PARAMETER]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[494]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<where>
+<XSet relation="and" isnot="false" clause="where">
+<XJoin isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.PLAN]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Field">
+<![CDATA[C.PLAN]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XJoin>
+<XJoin isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.TENOR_IN_MONTH]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Field">
+<![CDATA[C.TENOR]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XJoin>
+<XJoin isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.ACCOUNT_NUMBER]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Field">
+<![CDATA[B.ACCOUNT_NUMBER]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XJoin>
+<XSet relation="and" isnot="false" clause="where">
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.IXPRCS]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(PROCESS_ID)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+<XSet relation="and" isnot="false" clause="">
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.IXPRDT]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(PRODUCT_ID)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.ACCOUNT_NUMBER]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(ACCOUNT_NO)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+</XSet>
+</XSet>
+</XSet>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[select to_char(sysdate,'ddmmyy') as DD,substr(open_date,'7','2')||''||substr(open_date,'5','2') as  PRINTDATE,A.IXPRDT,A.IXPRCS,
+A.TENOR_IN_MONTH,A.ACCOUNT_NUMBER,A.CUSTOMER_NUMBER,A.LOAN_BALANCE,A.installment_amount,A.INSTALLMENT_DUE_DATE,A.DISBURSMENT_DATE,
+gm.CUSTOMER_NAME, gm.ADDRESS1, gm.ADDRESS2, gm.ADDRESS3, gm.ADDRESS4, gm.ADDRESS5,
+C.TENOR,c.interest,c.provisi,c.denda_keterlambatan,c.biaya_keterlambatan,
+c.penalty_pelunasan_dipercepat,A.OPEN_DATE  from DXI_PERSONAL_LOAN_KTA_DTLS A
+join kta_mstr_plan_parameter C on A.PLAN= C.PLAN and A.TENOR_IN_MONTH = C.TENOR
+join (
+ SELECT CUSTOMER_NAME, ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4, ADDRESS5, account_number FROM DXI_GIRO_MASTER_BRK
+ UNION
+ SELECT CUSTOMER_NAME, ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4, ADDRESS5, account_number FROM DXI_GIRO_MASTER_BSK
+ ) GM on  GM.account_number = A.account_number
+ where A.IXPRCS=$(PROCESS_ID)   AND A.IXPRDT=$(PRODUCT_ID)  AND A.ACCOUNT_NUMBER=$(ACCOUNT_NO)]]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[PRINTDATE]]>
+</column>
+<column type="string">
+<![CDATA[TT]]>
+</column>
+<column type="double">
+<![CDATA[IXPRDT]]>
+</column>
+<column type="double">
+<![CDATA[IXPRCS]]>
+</column>
+<column type="double">
+<![CDATA[TENOR_IN_MONTH]]>
+</column>
+<column type="string">
+<![CDATA[ACCOUNT_NUMBER]]>
+</column>
+<column type="string">
+<![CDATA[CUSTOMER_NUMBER]]>
+</column>
+<column type="double">
+<![CDATA[LOAN_BALANCE]]>
+</column>
+<column type="double">
+<![CDATA[INSTALLMENT_AMOUNT]]>
+</column>
+<column type="string">
+<![CDATA[INSTALLMENT_DUE_DATE]]>
+</column>
+<column type="string">
+<![CDATA[DISBURSMENT_DATE]]>
+</column>
+<column type="string">
+<![CDATA[CUSTOMER_NAME]]>
+</column>
+<column type="string">
+<![CDATA[ADDRESS]]>
+</column>
+<column type="double">
+<![CDATA[TENOR]]>
+</column>
+<column type="string">
+<![CDATA[INTEREST]]>
+</column>
+<column type="string">
+<![CDATA[PROVISI]]>
+</column>
+<column type="string">
+<![CDATA[DENDA_KETERLAMBATAN]]>
+</column>
+<column type="string">
+<![CDATA[BIAYA_KETERLAMBATAN]]>
+</column>
+<column type="string">
+<![CDATA[PENALTY_PELUNASAN_DIPERCEPAT]]>
+</column>
+<column type="string">
+<![CDATA[OPEN_DATE]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: personal_loan" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: personal_loan" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: personal_loan" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="personal_loan1" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<table>
+<alias><![CDATA[A]]></alias>
+<name><![CDATA[DXI_PERSONAL_LOAN_KTA_DTLS]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[15]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<table>
+<alias><![CDATA[C]]></alias>
+<name><![CDATA[KTA_MSTR_PLAN_PARAMETER]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[250]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<column>
+<![CDATA[TO_CHAR(SYSDATE,'ddmmyy')]]>
+<alias><![CDATA[DD]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[SUBSTR(OPEN_DATE,'7','2') || '' || SUBSTR(OPEN_DATE,'5','2')]]>
+<alias><![CDATA[PRINTDATE]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[A.IXPRDT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.IXPRCS]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.TENOR_IN_MONTH]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.ACCOUNT_NUMBER]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.CUSTOMER_NUMBER]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.LOAN_BALANCE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.INSTALLMENT_AMOUNT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.INSTALLMENT_DUE_DATE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[A.DISBURSMENT_DATE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<column>
+<![CDATA[(select CM.NMXFST 
+from DXCSTMRXM CM 
+where CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER and CM.IXPRCS = A.IXPRCS    )]]>
+<alias><![CDATA[CUSTOMER_NAME]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[(select CM.DRS1XA 
+from DXCSTMRXM CM 
+where CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER and CM.IXPRCS = A.IXPRCS    )]]>
+<alias><![CDATA[ADDRESS1]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[(select CM.DRS2XA 
+from DXCSTMRXM CM 
+where CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER and CM.IXPRCS = A.IXPRCS    )]]>
+<alias><![CDATA[ADDRESS2]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[(select CM.DRS3XA 
+from DXCSTMRXM CM 
+where CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER and CM.IXPRCS = A.IXPRCS    )]]>
+<alias><![CDATA[ADDRESS3]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[(select CM.DRS4XA 
+from DXCSTMRXM CM 
+where CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER and CM.IXPRCS = A.IXPRCS    )]]>
+<alias><![CDATA[ADDRESS4]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[(select CM.NMXCTY 
+from DXCSTMRXM CM 
+where CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER and CM.IXPRCS = A.IXPRCS    )]]>
+<alias><![CDATA[ADDRESS5]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[C.TENOR]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[C]]></table>
+</column>
+<column>
+<![CDATA[C.INTEREST]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[C]]></table>
+</column>
+<column>
+<![CDATA[C.PROVISI]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[C]]></table>
+</column>
+<column>
+<![CDATA[C.DENDA_KETERLAMBATAN]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[C]]></table>
+</column>
+<column>
+<![CDATA[C.BIAYA_KETERLAMBATAN]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[C]]></table>
+</column>
+<column>
+<![CDATA[C.PENALTY_PELUNASAN_DIPERCEPAT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[C]]></table>
+</column>
+<column>
+<![CDATA[A.OPEN_DATE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[A]]></table>
+</column>
+<where>
+<XSet relation="and" isnot="false" clause="where">
+<XJoin isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.PLAN]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Field">
+<![CDATA[C.PLAN]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XJoin>
+<XJoin isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.TENOR_IN_MONTH]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Field">
+<![CDATA[C.TENOR]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XJoin>
+<XSet relation="and" isnot="false" clause="where">
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.IXPRCS]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(PROCESS_ID)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+<XSet relation="and" isnot="false" clause="">
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.IXPRDT]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(PRODUCT_ID)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[A.ACCOUNT_NUMBER]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(ACCOUNT_NO)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+</XSet>
+</XSet>
+</XSet>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT TO_CHAR(SYSDATE,'ddmmyy') AS DD,SUBSTR(OPEN_DATE,'7','2')||''||SUBSTR(OPEN_DATE,'5','2') AS  PRINTDATE,A.IXPRDT,A.IXPRCS,
+A.TENOR_IN_MONTH,A.ACCOUNT_NUMBER,A.CUSTOMER_NUMBER,to_char(A.LOAN_BALANCE,'fm99G99G999G999G999G999G999D','NLS_NUMERIC_CHARACTERS='',.''')as LOAN_BALANCE,to_char(A.INSTALLMENT_AMOUNT,'fm99G99G999G999G999G999G999D','NLS_NUMERIC_CHARACTERS='',.''')as INSTALLMENT_AMOUNT,substr(A.INSTALLMENT_DUE_DATE,'1','2') as INSTALLMENT_DUE_DATE,A.DISBURSMENT_DATE,to_char(to_date(DISBURSMENT_DATE,'ddmmyyyy'),'dd/mm/yyyy')as PP,A.PERSONAL_LOAN_ACCOUNT,
+(SELECT CM.NMXFST FROM  DXCSTMRXM CM WHERE CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER AND CM.IXPRCS = A.IXPRCS)  AS CUSTOMER_NAME,A.ADDRESS1,A.ADDRESS2,A.ADDRESS3,A.ADDRESS4,
+(SELECT CM.NMXCTY FROM  DXCSTMRXM CM WHERE CM.ACCOUNT_NUMBER = A.ACCOUNT_NUMBER AND CM.IXPRCS = A.IXPRCS)  AS ADDRESS5,
+C.TENOR,C.INTEREST,C.PROVISI,C.DENDA_KETERLAMBATAN,C.BIAYA_KETERLAMBATAN, C.PENALTY_PELUNASAN_DIPERCEPAT,A.OPEN_DATE,to_char(to_date(sysdate,'dd-mm-yy'),'dd Mon yyyy') as DATE_1 
+FROM DXI_PERSONAL_LOAN_KTA_DTLS A
+JOIN KTA_MSTR_PLAN_PARAMETER C ON A.PLAN = C.PLAN AND A.TENOR_IN_MONTH = C.TENOR where A.IXPRCS= $(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.ACCOUNT_NUMBER=$(ACCOUNT_NO)]]></sqlstring>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: personal_loan1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: personal_loan1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: personal_loan1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+</query_jdbc>
+</query><query name="qCredit_Card" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<table>
+<alias><![CDATA[DXI_CREDIT_CARD_DTLS]]></alias>
+<name><![CDATA[DXI_CREDIT_CARD_DTLS]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[15]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT
+IXPRCS,DXPRCS,IXSTMT,DXSTMT,IXPRDT,
+AVAILABLE_CREDIT_LIMIT,AVAILABLE_CASH_LIMIT,TITLE, CUST_NAME,CREDIT_LIMIT_INSTALLMENT, NAME_LINE_2, ADDRESS1,ADDRESS2,ADDRESS3,ADDRESS4,ACH_BANK_PCIH_PAGE1,ACCT_PCIH_PAGE_1, MESSAGE1, MESSAGE2, MESSAGE3,BILLING_AMOUNT_TOTAL,MINIMUM_PAYMENT,STATUS,substr(ACCOUNT_NUMBER,1,7) as CC_DIGIT,(SUBSTR(PRINT_DATE,1,2) ||''|| SUBSTR(PRINT_DATE,4,2) ||''|| SUBSTR(PRINT_DATE,7,2)) as BARCODE_1,CREDIT_LINE_TRANSAKSI_CICILAN,
+
+PRINT_DATE,RETAIL_CREDIT_LINE,
+AVAILABLE_RETAIL_CREDIT_LINE,DUE_DATE,
+--CASE WHEN SIGN(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','') - REPLACE(REPLACE(available_retail_credit_line,'.',''),'-',''))>0 THEN available_retail_credit_line
+--WHEN SIGN(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','') - REPLACE(REPLACE(available_retail_credit_line,'.',''),'-',''))<0 THEN available_cash_credit_line
+--ELSE NULL END AS AVAILABLE_CASH_CREDIT_LINE,
+CASE
+WHEN SUBSTR(available_cash_credit_line,-1) = '-' AND SUBSTR(available_retail_credit_line,-1) = '-' THEN
+ CASE WHEN LEAST(-TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','')),-TO_NUMBER(REPLACE(REPLACE(available_retail_credit_line,'.',''),'-',''))) =(-TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-',''))) THEN available_cash_credit_line
+ ELSE available_retail_credit_line
+ END
+WHEN SUBSTR(available_cash_credit_line,-1) = '-' AND SUBSTR(available_retail_credit_line,-1) = '0' THEN
+ CASE WHEN LEAST(-TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','')),TO_NUMBER(REPLACE(REPLACE(available_retail_credit_line,'.',''),'-',''))) =(-TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-',''))) THEN available_cash_credit_line
+ ELSE available_retail_credit_line
+ END
+WHEN SUBSTR(available_cash_credit_line,-1) = '0' AND SUBSTR(available_retail_credit_line,-1) = '-' THEN
+ CASE WHEN LEAST(TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','')),-TO_NUMBER(REPLACE(REPLACE(available_retail_credit_line,'.',''),'-',''))) =(-TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-',''))) THEN available_cash_credit_line
+ ELSE available_retail_credit_line
+ END
+WHEN SUBSTR(available_cash_credit_line,-1) = '0' AND SUBSTR(available_retail_credit_line,-1) = '0' THEN
+ CASE WHEN LEAST(TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','')),TO_NUMBER(REPLACE(REPLACE(available_retail_credit_line,'.',''),'-',''))) = TO_NUMBER(REPLACE(REPLACE(available_cash_credit_line,'.',''),'-','')) THEN available_cash_credit_line
+ ELSE available_retail_credit_line
+ END
+END AS AVAILABLE_CASH_CREDIT_LINE,
+NO_AMPLOP_WAYBILL,CARD_NUMBER,ACCOUNT_NUMBER,PREVIOUS_BALANCE_SUMMARY,PURCHASE_SUMMARY,CASH_ADVANCE_SUMMARY,PAYMENT_SUMMARY,
+CREDIT_SUMMARY,FEES_AND_INTEREST_SUMMARY,NEW_BALANCE_SUMMARY,PRIMARY_CARD,CARD_TYPE,PRIMARY_CARD_NO
+,ds.PREVIOUS_BALANCE_BONUS_BUCKS,ds.BONUS_BUCKS,ds.BUCKS_USED,ds.BONUS_BUCKS_END
+,CASE WHEN NVL(SUBSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,1,INSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,'/',1)-1),'N') != 'N'  
+THEN SUBSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,1,INSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,'/',1)-1) ||'/ '||
+SUBSTR(PURCHASE_CASH_ADVANCE_RATE_MONTH,1,INSTR(PURCHASE_CASH_ADVANCE_RATE_MONTH,'/',1)-1) ELSE NULL END AS PURCHASE_CASH_ADVANCE_RATE_MONTH,
+CASE WHEN NVL(SUBSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,INSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,'/',1)+2,LENGTH(PURCHASE_CASH_ADVANCE_RATE_YEAR)),'N') != 'N'  
+THEN SUBSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,INSTR(PURCHASE_CASH_ADVANCE_RATE_YEAR,'/',1)+2,LENGTH(PURCHASE_CASH_ADVANCE_RATE_YEAR)) ||'/ '||
+SUBSTR(PURCHASE_CASH_ADVANCE_RATE_MONTH,INSTR(PURCHASE_CASH_ADVANCE_RATE_MONTH,'/',1)+2) ELSE NULL END AS PURCHASE_CASH_ADVANCE_RATE_YEAR,
+case when substr(ACCOUNT_NUMBER,1,1) = 8 THEN 'Purchase_Card'
+               WHEN substr(ACCOUNT_NUMBER,1,1) = 5 THEN 'Master_card'
+               WHEN substr(ACCOUNT_NUMBER,1,1) = 4 THEN 'Visa_Card'
+               WHEN substr(ACCOUNT_NUMBER,1,1) = 3 THEN 'JCB_Card'
+               ELSE 'Other_Card' end as CARD_NAME
+from DXI_CREDIT_CARD_DTLS cd JOIN DXI_CREDIT_CARD_SMRY_DTLS ds
+ON IXPRCS = IXPRCSS
+AND PRIMARY_CARD_NO = PRIMARY_CARD_NOS
+AND CARD_TYPE = CARD_TYPES
+WHERE IXPRCS=$(PROCESS_ID)
+AND IXPRDT=$(PRODUCT_ID)
+AND PRIMARY_CARD_NO =$(PRIMARY_CARD_NO)
+AND CARD_TYPE=$(CARD_TYPE)]]></sqlstring>
+<columnInfo>
+<column type="double">
+<![CDATA[IXPRCS]]>
+</column>
+<column type="timeInstant">
+<![CDATA[DXPRCS]]>
+</column>
+<column type="double">
+<![CDATA[IXSTMT]]>
+</column>
+<column type="timeInstant">
+<![CDATA[DXSTMT]]>
+</column>
+<column type="double">
+<![CDATA[IXPRDT]]>
+</column>
+<column type="string">
+<![CDATA[AVAILABLE_CREDIT_LIMIT]]>
+</column>
+<column type="string">
+<![CDATA[AVAILABLE_CASH_LIMIT]]>
+</column>
+<column type="string">
+<![CDATA[TITLE]]>
+</column>
+<column type="string">
+<![CDATA[CUST_NAME]]>
+</column>
+<column type="string">
+<![CDATA[CREDIT_LIMIT_INSTALLMENT]]>
+</column>
+<column type="string">
+<![CDATA[NAME_LINE_2]]>
+</column>
+<column type="string">
+<![CDATA[ADDRESS1]]>
+</column>
+<column type="string">
+<![CDATA[ADDRESS2]]>
+</column>
+<column type="string">
+<![CDATA[ADDRESS3]]>
+</column>
+<column type="string">
+<![CDATA[ADDRESS4]]>
+</column>
+<column type="string">
+<![CDATA[ACH_BANK_PCIH_PAGE1]]>
+</column>
+<column type="string">
+<![CDATA[ACCT_PCIH_PAGE_1]]>
+</column>
+<column type="string">
+<![CDATA[MESSAGE1]]>
+</column>
+<column type="string">
+<![CDATA[MESSAGE2]]>
+</column>
+<column type="string">
+<![CDATA[MESSAGE3]]>
+</column>
+<column type="string">
+<![CDATA[BILLING_AMOUNT_TOTAL]]>
+</column>
+<column type="string">
+<![CDATA[MINIMUM_PAYMENT]]>
+</column>
+<column type="string">
+<![CDATA[STATUS]]>
+</column>
+<column type="string">
+<![CDATA[CC_DIGIT]]>
+</column>
+<column type="string">
+<![CDATA[BARCODE_1]]>
+</column>
+<column type="string">
+<![CDATA[CREDIT_LINE_TRANSAKSI_CICILAN]]>
+</column>
+<column type="string">
+<![CDATA[PRINT_DATE]]>
+</column>
+<column type="string">
+<![CDATA[RETAIL_CREDIT_LINE]]>
+</column>
+<column type="string">
+<![CDATA[AVAILABLE_RETAIL_CREDIT_LINE]]>
+</column>
+<column type="string">
+<![CDATA[DUE_DATE]]>
+</column>
+<column type="string">
+<![CDATA[AVAILABLE_CASH_CREDIT_LINE]]>
+</column>
+<column type="string">
+<![CDATA[NO_AMPLOP_WAYBILL]]>
+</column>
+<column type="string">
+<![CDATA[CARD_NUMBER]]>
+</column>
+<column type="string">
+<![CDATA[ACCOUNT_NUMBER]]>
+</column>
+<column type="string">
+<![CDATA[PREVIOUS_BALANCE_SUMMARY]]>
+</column>
+<column type="string">
+<![CDATA[PURCHASE_SUMMARY]]>
+</column>
+<column type="string">
+<![CDATA[CASH_ADVANCE_SUMMARY]]>
+</column>
+<column type="string">
+<![CDATA[PAYMENT_SUMMARY]]>
+</column>
+<column type="string">
+<![CDATA[CREDIT_SUMMARY]]>
+</column>
+<column type="string">
+<![CDATA[FEES_AND_INTEREST_SUMMARY]]>
+</column>
+<column type="string">
+<![CDATA[NEW_BALANCE_SUMMARY]]>
+</column>
+<column type="double">
+<![CDATA[PRIMARY_CARD]]>
+</column>
+<column type="string">
+<![CDATA[CARD_TYPE]]>
+</column>
+<column type="string">
+<![CDATA[PRIMARY_CARD_NO]]>
+</column>
+<column type="string">
+<![CDATA[PREVIOUS_BALANCE_BONUS_BUCKS]]>
+</column>
+<column type="string">
+<![CDATA[BONUS_BUCKS]]>
+</column>
+<column type="string">
+<![CDATA[BUCKS_USED]]>
+</column>
+<column type="string">
+<![CDATA[BONUS_BUCKS_END]]>
+</column>
+<column type="string">
+<![CDATA[PURCHASE_CASH_ADVANCE_RATE_MONTH]]>
+</column>
+<column type="string">
+<![CDATA[PURCHASE_CASH_ADVANCE_RATE_YEAR]]>
+</column>
+<column type="string">
+<![CDATA[CARD_NAME]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="CARD_TYPE" source="Query: qCredit_Card" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CARD_TYPE" xtype="string">
+</variable>
+<variable  name="PRIMARY_CARD_NO" source="Query: qCredit_Card" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRIMARY_CARD_NO" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: qCredit_Card" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: qCredit_Card" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="MORTGAGE_Letter" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="true">
+<table>
+<alias><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></alias>
+<name><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[15]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.IXPRCS]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[double]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[to_char(sysdate,'dd fmMonth yyyy')]]>
+<alias><![CDATA[dd]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.STMT_TYPE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CABANG]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CIF_STMT_DT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.FILLER1]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.KEPADA]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.POSTEL_CDE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CNAME]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.FILLER2]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.ADDRESS1]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.ADDRESS2]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.ADDRESS3]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.ADDRESS4]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.ADDRESS5]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.FILLER3]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.MESSAGE1]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.MESSAGE2]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.MESSAGE3]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.MESSAGE4]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.MESSAGE5]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.MESSAGE6]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.FILLER4]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CIF]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CNAME_1ST]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<column>
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CNAME_2ND]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[string]]></type>
+<table><![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER]]></table>
+</column>
+<where>
+<XSet relation="and" isnot="false" clause="where">
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.IXPRCS]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(PROCESS_ID)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+<XSet relation="and" isnot="false" clause="">
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.IXPRDT]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(PRODUCT_ID)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[DXI_MORTGAGE_NOTIFICATION_LETTER.CIF]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Expression">
+<![CDATA[$(CIF)]]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+</XSet>
+</XSet>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="0"><![CDATA[SELECT IXPRCS,to_char(sysdate,'dd fmMonth yyyy')as dd,STMT_TYPE,CABANG,CIF_STMT_DT,FILLER1,KEPADA,POSTEL_CDE,CNAME,FILLER2,
+ADDRESS1,ADDRESS2,ADDRESS3,ADDRESS4,ADDRESS5,FILLER3,MESSAGE1,MESSAGE2,MESSAGE3,MESSAGE4,MESSAGE5,MESSAGE6,FILLER4,CIF,CNAME_1ST,CNAME_2ND
+FROM DXI_MORTGAGE_NOTIFICATION_LETTER where IXPRCS= $(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND CIF=$(CIF)]]></sqlstring>
+</uniform_sql>
+<variable  name="CIF" source="MORTGAGE_Letter" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="MORTGAGE_Letter" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="MORTGAGE_Letter" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+</query_jdbc>
+</query><query name="q_Summary" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT * FROM MVW_DXI_CONS_SUMMARY 
+WHERE IXPRCS=$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND GCIF = $(GCIF) ORDER BY SRL_NO, CURRENCY]]></sqlstring>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_S_Summary" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT * FROM MVW_DXI_CONS_SUB_SUMMARY V
+WHERE IXPRCS=$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND GCIF = $(GCIF) order by v.nomor_pinjaman,v.loan_no asc]]></sqlstring>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_S_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_S_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_S_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Raksadana" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT 
+gcif,
+sid_no,
+product_name,
+mutual_fund_type,
+TO_CHAR(transaction_date,'dd/mm/yyyy') as transaction_date,
+transaction_type,
+account_no,
+nav_price,
+nn,
+unit,
+uu,
+net_amount,
+rr
+FROM
+(SELECT
+    a.gcif,
+    a.sid_no,
+    a.product_name || '/' || a.currency AS product_name,
+    a.mutual_fund_type,
+    CASE
+    WHEN SUBSTR(a.transaction_date,5,2) >= 1 AND SUBSTR(a.transaction_date,5,2) <= 12 THEN TO_DATE(a.transaction_date, 'RRRRMMDD')
+    WHEN SUBSTR(a.transaction_date,3,2) >= 1 AND SUBSTR(a.transaction_date,3,2) <= 12 THEN TO_DATE(a.transaction_date, 'DDMMRRRR')
+    END as transaction_date,
+    a.transaction_type,
+    a.account_no,
+    a.nav_price,
+    SUBSTR(to_char(round((REPLACE(REPLACE(a.nav_price,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+    INSTR(to_char(round((REPLACE(REPLACE(a.nav_price,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+    SUBSTR(to_char(round((REPLACE(REPLACE(a.nav_price,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+    INSTR(to_char(round((REPLACE(REPLACE(a.nav_price,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,4) AS nn,
+    a.unit,
+    SUBSTR(to_char(((REPLACE(REPLACE(a.unit,',','.'),'-',''))),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+    INSTR(to_char(((REPLACE(REPLACE(a.unit,',','.'),'-',''))),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+    SUBSTR(to_char(((REPLACE(REPLACE(a.unit,',','.'),'-',''))),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+    INSTR(to_char(((REPLACE(REPLACE(a.unit,',','.'),'-',''))),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,4) AS uu,
+    a.net_amount,
+    SUBSTR(to_char(round((REPLACE(REPLACE(a.net_amount,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D0000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+    INSTR(to_char(round((REPLACE(REPLACE(a.net_amount,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D0000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+    SUBSTR(to_char(round((REPLACE(REPLACE(a.net_amount,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D0000','NLS_NUMERIC_CHARACTERS='',.'''),
+    INSTR(to_char(round((REPLACE(REPLACE(a.net_amount,',','.'),'-','')),4),'fm999G999G999G999G999G999G999G999G990D0000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as rr
+FROM
+DXI_MUTUAL_FUND_TXN_DTLS a
+WHERE a.IXPRCS=$(PROCESS_ID) AND a.IXPRDT=$(PRODUCT_ID) AND a.gcif =$(GCIF)
+) tb
+ORDER BY
+sid_no,
+product_name,
+mutual_fund_type, transaction_date]]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[GCIF]]>
+</column>
+<column type="string">
+<![CDATA[SID_NO]]>
+</column>
+<column type="string">
+<![CDATA[PRODUCT_NAME]]>
+</column>
+<column type="string">
+<![CDATA[MUTUAL_FUND_TYPE]]>
+</column>
+<column type="string">
+<![CDATA[TRANSACTION_DATE]]>
+</column>
+<column type="string">
+<![CDATA[TRANSACTION_TYPE]]>
+</column>
+<column type="string">
+<![CDATA[ACCOUNT_NO]]>
+</column>
+<column type="string">
+<![CDATA[NAV_PRICE]]>
+</column>
+<column type="string">
+<![CDATA[NN]]>
+</column>
+<column type="string">
+<![CDATA[UNIT]]>
+</column>
+<column type="string">
+<![CDATA[UU]]>
+</column>
+<column type="string">
+<![CDATA[NET_AMOUNT]]>
+</column>
+<column type="string">
+<![CDATA[RR]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Raksadana" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Raksadana" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Raksadana" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Obligasi" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[select SID_NO,product_name,ACCOUNT_NO,transaction_id, TO_CHAR(deal_dates,'dd/mm/yyyy') as deal_date , deal_dates,
+transaction_type, amount, amt
+FROM
+(select SID_NO,SECURITY_NAME AS product_name,ACCOUNT_NO,TRXN_ID AS transaction_id, 
+CASE  
+WHEN SUBSTR(DATE_TRXN,5,2) >= 1 AND SUBSTR(DATE_TRXN,5,2) <= 12 THEN TO_DATE(DATE_TRXN, 'RRRRMMDD')
+WHEN SUBSTR(DATE_TRXN,3,2) >= 1 AND SUBSTR(DATE_TRXN,3,2) <= 12 THEN TO_DATE(DATE_TRXN, 'DDMMRRRR')
+END as deal_dates,               
+trxn_type_buy_sell as transaction_type,FACE_AMOUNT AS amount,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(abs(FACE_AMOUNT),',','.'),'-',''))),2),'fm999G999G999G999G999G999G999D00','NLS_NUMERIC_CHARACTERS='',.''')as amt
+from DXI_ESTAT_OBLIGASI_TRXN
+WHERE IXPRCS=$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND gcif = $(GCIF)
+) tb ORDER BY product_name,account_no,deal_dates desc]]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[SID_NO]]>
+</column>
+<column type="string">
+<![CDATA[PRODUCT_NAME]]>
+</column>
+<column type="string">
+<![CDATA[ACCOUNT_NO]]>
+</column>
+<column type="string">
+<![CDATA[TRANSACTION_ID]]>
+</column>
+<column type="string">
+<![CDATA[DEAL_DATE]]>
+</column>
+<column type="timeInstant">
+<![CDATA[DEAL_DATES]]>
+</column>
+<column type="string">
+<![CDATA[TRANSACTION_TYPE]]>
+</column>
+<column type="string">
+<![CDATA[AMOUNT]]>
+</column>
+<column type="string">
+<![CDATA[AMT]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Obligasi" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Obligasi" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Obligasi" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Emas" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[select GOLD_ACCOUNT_NO,product_name, TO_CHAR(transaction_date,'dd/mm/yyyy') as transaction_date, transaction_type, transaction_amount, 
+gold_quantity_in_grams, gold_quantity_in_grams_1, gold_value, transaction_channel
+FROM  
+(select a.GOLD_ACCOUNT_NO,
+b.product_name,
+CASE  
+WHEN SUBSTR(a.transaction_date,5,2) >= 1 AND SUBSTR(a.transaction_date,5,2) <= 12 THEN TO_DATE(a.transaction_date, 'RRRRMMDD')
+WHEN SUBSTR(a.transaction_date,3,2) >= 1 AND SUBSTR(a.transaction_date,3,2) <= 12 THEN TO_DATE(a.transaction_date, 'DDMMRRRR')
+END as transaction_date,               
+a.transaction_type,
+to_char(round(TO_NUMBER(REPLACE(REPLACE(a.transaction_amount,',','.'),'-',''),'99999999999999999999.0099999999'),4),'fm99G99G99G99G99G999G999D00','NLS_NUMERIC_CHARACTERS='',.''')transaction_amount,
+a.gold_quantity_in_grams,
+REPLACE(SUBSTR(to_char(a.gold_quantity_in_grams,'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char(a.gold_quantity_in_grams,'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) || 
+SUBSTR(to_char(a.gold_quantity_in_grams,'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''), 
+INSTR(to_char(a.gold_quantity_in_grams,'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,4),'-','') AS gold_quantity_in_grams_1,
+CASE WHEN TO_NUMBER(INSTR(a.gold_value,'-'),'99999999999999999990.0099999999')>0 THEN '('||SUBSTR(to_char(round(TO_NUMBER(REPLACE(REPLACE(a.gold_value,',','.'),'-',''),'99999999999999999999.0099999999'),4),'fm99G99G99G99G99G999G999D00','NLS_NUMERIC_CHARACTERS='',.'''),INSTR(a.gold_value,'-')+0)||')'
+ELSE to_char(round(TO_NUMBER(REPLACE(REPLACE(a.gold_value,',','.'),'-',''),'99999999999999999999.0099999999'),4),'fm99G99G99G99G99G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') END AS  gold_value,
+a.transaction_channel
+from dxi_ESTAT_EMAS_TRX a,DXI_ESTAT_EMAS_HOLDING b where a.gcif =b.gcif
+AND a.GOLD_ACCOUNT_NO = b.GOLD_ACCOUNT_NO
+AND a.IXPRCS = b.IXPRCS 
+AND a.IXPRCS=$(PROCESS_ID) AND a.IXPRDT=$(PRODUCT_ID) AND a.gcif = $(GCIF)
+) tb ORDER BY transaction_date]]></sqlstring>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Emas" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Emas" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Emas" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Deposito" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[select account_no,
+currency,
+TO_CHAR(CASE WHEN FLAG = '1' THEN '0' ELSE NEW_INTEREST_RATE END,'fm999G999G999G999G999G999G999G999G990D09','NLS_NUMERIC_CHARACTERS='',.''') as interest_rate1,
+to_char(to_date(Due_date,'dd/mm/yyyy'),'dd/mm/yyyy')Due_date,
+Due_date_instruction,
+principal_amount,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(principal_amount,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''')as principal_amount_1
+from dxi_estat_deposito
+WHERE IXPRCS = $(PROCESS_ID)
+AND IXPRDT = $(PRODUCT_ID)
+AND GCIF = $(GCIF)]]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[ACCOUNT_NO]]>
+</column>
+<column type="string">
+<![CDATA[CURRENCY]]>
+</column>
+<column type="string">
+<![CDATA[INTEREST_RATE1]]>
+</column>
+<column type="string">
+<![CDATA[DUE_DATE]]>
+</column>
+<column type="string">
+<![CDATA[DUE_DATE_INSTRUCTION]]>
+</column>
+<column type="string">
+<![CDATA[PRINCIPAL_AMOUNT]]>
+</column>
+<column type="string">
+<![CDATA[PRINCIPAL_AMOUNT_1]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Deposito" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Deposito" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Deposito" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Cusdtl" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[select CUSTOMER_NAME, ADDRESS1, ADDRESS2, ADDRESS3, ADDRESS4, ADDRESS5, ADDRESS6, RELATIONSHIP_MANAGER, CIF_NO, to_char(STXSTXDT,'fmDD-')||to_char(STXENXDT,'DD/MM/RRRR') as Periode_Laporan from  DXI_ESTAT_MASTERDCIF WHERE IXPRCS=$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND GCIF = $(GCIF)]]></sqlstring>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Cusdtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Cusdtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Cusdtl" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="CURRENCY2" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT bank_code,to_char(to_date(REC_CTD_DT,'yyyymmdd'),'dd Mon YYYY')as REC_CTD_DT,
+to_char(MID_currency,'fm999G999G999G999G999G999G999D00','NLS_NUMERIC_CHARACTERS='',.''')as MID_currency,
+row_number()over(order by change_currency)As sno,CHANGE_CURRENCY ||' :'AS CHANGE_CURRENCY FROM DXI_ESTAT_KURS_MASTER WHERE active_status = 'A']]></sqlstring>
+</uniform_sql>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="Currency_Master" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT bank_code,to_char(to_date(REC_CTD_DT,'yyyymmdd'),'dd Mon YYYY')as REC_CTD_DT,MID_currency,
+row_number()over(order by change_currency)As sno,CHANGE_CURRENCY FROM DXI_ESTAT_KURS_MASTER WHERE active_status = 'A']]></sqlstring>
+</uniform_sql>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="INFO_Penting" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT info_penting_id,info_column_1,info_column_2,info_column_3,KETERANGAN  FROM DXI_INFO_PENTING_MASTER WHERE active_status = 'A']]></sqlstring>
+</uniform_sql>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_tabungan" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT product_name_1,product_name,currency,sub_product_name,Tanggal_Transaksi,TRXN_DATE,Keterangan,Mutasi_Debet,Mutasi_Kredit,saldo,seq,account_no,gcif,
+open_date,debit_data,due_date,tenor,monthly_deposit 
+FROM
+(
+--Saldo Awal
+SELECT b.product_name||'/ '||b.currency as product_name_1,b.product_name as product_name,b.currency,b.sub_product_name as sub_product_name,
+'' AS Tanggal_Transaksi, TO_DATE('01-JAN-1900','DD-MM-RRRR') AS TRXN_DATE,'Saldo Awal' AS Keterangan,'' as Mutasi_Debet,'' as Mutasi_Kredit,
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Saldo_Awal,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(a.Saldo_Awal,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Saldo_Awal,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(a.Saldo_Awal,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as saldo,'0' as seq,
+b.account_no,b.gcif,b.ixprcs,b.ixprdt,
+CASE  WHEN SUBSTR(c.OPEN_DATE,5,2)>= 1 AND SUBSTR(c.OPEN_DATE,5,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.OPEN_DATE,3,2)>= 1 AND SUBSTR(c.OPEN_DATE,3,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'DDMMRRRR'),'DD-Mon-RRRR') END as OPEN_DATE,c.debit_data,
+CASE  WHEN SUBSTR(c.due_date,5,2) >= 1 AND SUBSTR(c.due_date,5,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.due_date,3,2) >= 1 AND SUBSTR(c.due_date,3,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'DDMMRRRR'),'DD-Mon-RRRR') END as due_date,c.tenor,
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2)  as monthly_deposit 
+FROM DXI_ESTAT_CASA_BAL a
+--RIGHT 
+JOIN DXI_ESTAT_CASA b on a.ixprcs=b.ixprcs and a.gcif=b.gcif and a.account_no=b.account_no and  a.currency=b.currency
+JOIN (select distinct ixprcs,gcif,account_no,currency from DXI_ESTAT_CASA_TRXN) t ON a.ixprcs=t.ixprcs and a.gcif=t.gcif and a.account_no=t.account_no and  a.currency=t.currency
+LEFT JOIN dxi_estat_berjangka c on a.ixprcs=c.ixprcs and a.gcif=c.gcif and a.account_no=c.account_no
+
+--TRNX
+UNION ALL
+SELECT  b.product_name||'/ '||b.currency as product_name_1,b.product_name as product_name,b.currency,b.sub_product_name as sub_product_name,
+CASE  WHEN SUBSTR(a.Tanggal_Transaksi,5,2) >= 1 AND SUBSTR(a.Tanggal_Transaksi,5,2) <= 12 THEN TO_CHAR(TO_DATE (a.Tanggal_Transaksi, 'RRRRMMDD'),'DD/MM/RRRR') 
+      WHEN SUBSTR(a.Tanggal_Transaksi,3,2) >= 1 AND SUBSTR(a.Tanggal_Transaksi,3,2) <= 12 THEN TO_CHAR(TO_DATE (a.Tanggal_Transaksi, 'DDMMRRRR'),'DD/MM/RRRR') END  AS Tanggal_Transaksi,
+TO_DATE(CASE  WHEN SUBSTR(a.Tanggal_Transaksi,5,2) >= 1 AND SUBSTR(a.Tanggal_Transaksi,5,2) <= 12 THEN TO_CHAR(TO_DATE (a.Tanggal_Transaksi, 'RRRRMMDD'),'DD/MM/RRRR') 
+      WHEN SUBSTR(a.Tanggal_Transaksi,3,2) >= 1 AND SUBSTR(a.Tanggal_Transaksi,3,2) <= 12 THEN TO_CHAR(TO_DATE (a.Tanggal_Transaksi, 'DDMMRRRR'),'DD/MM/RRRR') END ,'DD/MM/RRRR') AS TRXN_DATE,
+
+a.KETERANGAN_TRANSAKSI1 || CASE WHEN a.KETERANGAN_TRANSAKSI2 IS NOT NULL THEN  CHR(13) || a.KETERANGAN_TRANSAKSI2 ELSE NULL END
+                        || CASE WHEN a.KETERANGAN_TRANSAKSI3 IS NOT NULL THEN  CHR(13) || a.KETERANGAN_TRANSAKSI3 ELSE NULL END
+                        || CASE WHEN a.KETERANGAN_TRANSAKSI4 IS NOT NULL THEN  CHR(13) || a.KETERANGAN_TRANSAKSI4 ELSE NULL END
+                        || CASE WHEN a.KETERANGAN_TRANSAKSI5 IS NOT NULL THEN  CHR(13) || a.KETERANGAN_TRANSAKSI5 ELSE NULL END AS Keteranan,
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as Mutasi_Debet,
+---------
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as Mutasi_Kredit,
+---------
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Balance,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(a.Balance,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.Balance,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(a.Balance,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as saldo,
+a.Sequence_trxn as seq,
+----b.account_no,b.gcif,b.ixprcs,b.ixprdt,
+a.account_no,a.gcif,a.ixprcs,a.ixprdt,
+CASE  WHEN SUBSTR(c.OPEN_DATE,5,2)>= 1 AND SUBSTR(c.OPEN_DATE,5,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.OPEN_DATE,3,2)>= 1 AND SUBSTR(c.OPEN_DATE,3,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'DDMMRRRR'),'DD-Mon-RRRR') END as OPEN_DATE,c.debit_data,
+CASE  WHEN SUBSTR(c.due_date,5,2) >= 1 AND SUBSTR(c.due_date,5,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.due_date,3,2) >= 1 AND SUBSTR(c.due_date,3,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'DDMMRRRR'),'DD-Mon-RRRR') END as due_date,c.tenor,
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as monthly_deposit
+FROM DXI_ESTAT_CASA_TRXN a
+--RIGHT 
+JOIN DXI_ESTAT_CASA b on a.ixprcs=b.ixprcs and a.gcif=b.gcif and a.account_no=b.account_no and  a.currency=b.currency
+LEFT JOIN dxi_estat_berjangka c on a.ixprcs=c.ixprcs and a.gcif=c.gcif and a.account_no=c.account_no
+
+---TOTAL
+UNION ALL
+SELECT  b.product_name||'/ '||b.currency as product_name_1,b.product_name as product_name,b.currency,b.sub_product_name as sub_product_name,
+'' AS Tanggal_Transaksi,TRUNC(SYSDATE) AS TRXN_DATE,'Total' AS Keteranan,
+SUBSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Debit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as Mutasi_Debet,
+CASE WHEN a.account_no IS NULL THEN '0,00' ELSE    
+SUBSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char(SUM(TO_NUMBER(REPLACE(a.Trasansaksi_Kredit_Amount,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) end as Mutasi_Kredit,
+'' as saldo,'999999998' as seq,
+----a.account_no,a.gcif,a.ixprcs,a.ixprdt,
+b.account_no,b.gcif,b.ixprcs,b.ixprdt,
+CASE  WHEN SUBSTR(c.OPEN_DATE,5,2)>= 1 AND SUBSTR(c.OPEN_DATE,5,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.OPEN_DATE,3,2)>= 1 AND SUBSTR(c.OPEN_DATE,3,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'DDMMRRRR'),'DD-Mon-RRRR') END as OPEN_DATE,c.debit_data,
+CASE  WHEN SUBSTR(c.due_date,5,2) >= 1 AND SUBSTR(c.due_date,5,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.due_date,3,2) >= 1 AND SUBSTR(c.due_date,3,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'DDMMRRRR'),'DD-Mon-RRRR') END as due_date,c.tenor,
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as monthly_deposit
+FROM DXI_ESTAT_CASA_TRXN a
+--RIGHT 
+JOIN DXI_ESTAT_CASA b on a.ixprcs=b.ixprcs and a.gcif=b.gcif and a.account_no=b.account_no and  a.currency=b.currency
+LEFT JOIN dxi_estat_berjangka c on a.ixprcs=c.ixprcs and a.gcif=c.gcif and a.account_no=c.account_no
+GROUP BY  b.product_name,b.currency,b.sub_product_name,
+----a.account_no,a.gcif,a.ixprcs,a.ixprdt,
+a.account_no,b.account_no,b.gcif,b.ixprcs,b.ixprdt,
+c.OPEN_DATE,c.debit_data,c.due_date,c.tenor,c.monthly_deposit
+
+---Saldo Akhir
+UNION ALL
+SELECT b.product_name||'/ '||b.currency as product_name_1,b.product_name as product_name,b.currency,b.sub_product_name as sub_product_name,
+'' AS Tanggal_Transaksi,TRUNC(SYSDATE) AS TRXN_DATE,'Saldo Akhir' AS Keterangan,'' as Mutasi_Debet,'' Mutasi_Kredit,
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.SALDO_AKHIR,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(a.SALDO_AKHIR,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(a.SALDO_AKHIR,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(a.SALDO_AKHIR,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as saldo,
+'999999999' as seq,
+a.account_no,a.gcif,a.ixprcs,a.ixprdt,
+----b.account_no,b.gcif,b.ixprcs,b.ixprdt,
+CASE  WHEN SUBSTR(c.OPEN_DATE,5,2)>= 1 AND SUBSTR(c.OPEN_DATE,5,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.OPEN_DATE,3,2)>= 1 AND SUBSTR(c.OPEN_DATE,3,2)<= 12 THEN TO_CHAR(TO_DATE (c.OPEN_DATE, 'DDMMRRRR'),'DD-Mon-RRRR') END as OPEN_DATE,c.debit_data,
+CASE  WHEN SUBSTR(c.due_date,5,2) >= 1 AND SUBSTR(c.due_date,5,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'RRRRMMDD'),'DD-Mon-RRRR') 
+      WHEN SUBSTR(c.due_date,3,2) >= 1 AND SUBSTR(c.due_date,3,2) <= 12 THEN TO_CHAR(TO_DATE (c.due_date, 'DDMMRRRR'),'DD-Mon-RRRR') END as due_date,c.tenor,
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),1,
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)) ||
+SUBSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),
+INSTR(to_char((TO_NUMBER(REPLACE(c.monthly_deposit,',',''),'99999999999999999999.0099999999')),'fm999G999G999G999G999G999G999G999G990D000000','NLS_NUMERIC_CHARACTERS='',.'''),',',1,1)+1,2) as monthly_deposit
+FROM DXI_ESTAT_CASA_BAL a
+--RIGHT 
+JOIN DXI_ESTAT_CASA b on a.ixprcs=b.ixprcs and a.gcif=b.gcif and a.account_no=b.account_no and  a.currency=b.currency
+JOIN (select distinct ixprcs,gcif,account_no,currency from DXI_ESTAT_CASA_TRXN) t ON a.ixprcs=t.ixprcs and a.gcif=t.gcif and a.account_no=t.account_no and  a.currency=t.currency
+LEFT JOIN dxi_estat_berjangka c on a.ixprcs=c.ixprcs and a.gcif=c.gcif and a.account_no=c.account_no
+) tbl
+WHERE IXPRCS=$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND gcif = $(GCIF)
+--WHERE IXPRCS='60131' AND IXPRDT='1' AND gcif = 'G607348844' 
+ORDER BY gcif,account_no,product_name,currency,TRXN_DATE,TO_NUMBER(seq)]]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[PRODUCT_NAME_1]]>
+</column>
+<column type="string">
+<![CDATA[PRODUCT_NAME]]>
+</column>
+<column type="string">
+<![CDATA[CURRENCY]]>
+</column>
+<column type="string">
+<![CDATA[SUB_PRODUCT_NAME]]>
+</column>
+<column type="string">
+<![CDATA[TANGGAL_TRANSAKSI]]>
+</column>
+<column type="timeInstant">
+<![CDATA[TRXN_DATE]]>
+</column>
+<column type="string">
+<![CDATA[KETERANGAN]]>
+</column>
+<column type="string">
+<![CDATA[MUTASI_DEBET]]>
+</column>
+<column type="string">
+<![CDATA[MUTASI_KREDIT]]>
+</column>
+<column type="string">
+<![CDATA[SALDO]]>
+</column>
+<column type="string">
+<![CDATA[SEQ]]>
+</column>
+<column type="string">
+<![CDATA[ACCOUNT_NO]]>
+</column>
+<column type="string">
+<![CDATA[GCIF]]>
+</column>
+<column type="string">
+<![CDATA[OPEN_DATE]]>
+</column>
+<column type="string">
+<![CDATA[DEBIT_DATA]]>
+</column>
+<column type="string">
+<![CDATA[DUE_DATE]]>
+</column>
+<column type="string">
+<![CDATA[TENOR]]>
+</column>
+<column type="string">
+<![CDATA[MONTHLY_DEPOSIT]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_tabungan" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_tabungan" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_tabungan" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Mortgage_KPR" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT
+GCIF,
+CIF,
+NOMOR_PINJAMAN_PEMBIAYAAN,
+CURRENCY,
+TRXN_ODR,
+AWAL_AMOUNT,
+SISA_POKOK,
+CREDIT_MATURITY_DATE,
+TOTAL_KEWAJIBAN,
+KODE_TRANSAKSI,
+TANGGAL_TRANSAKSI,
+trim(KETERANGAN) as KETERANGAN,
+JUMLAH_TRANSAKSI,
+SISA_HUTANG_POKOK,
+JUMLAH_POKOK,
+JUMLAH_BUNGA,
+JUMLAH_DENDA,
+TOTAL_TUNGGAKAN,
+STMT_TYPE,
+SECTION,
+IXPRCS, IXPRDT
+FROM
+(
+SELECT
+GCIF,
+CIF,
+CLMN2 as NOMOR_PINJAMAN_PEMBIAYAAN,
+CURRENCY,
+SRL_NO AS TRXN_ODR,
+AWAL_AMOUNT,
+SISA_POKOK,
+CREDIT_MATURITY_DATE,
+NULL as TOTAL_KEWAJIBAN,
+NULL as KODE_TRANSAKSI,
+NULL as TANGGAL_TRANSAKSI,
+NULL as KETERANGAN,
+NULL as JUMLAH_TRANSAKSI,
+NULL as SISA_HUTANG_POKOK,
+NULL as JUMLAH_POKOK,
+NULL as JUMLAH_BUNGA,
+NULL as JUMLAH_DENDA,
+NULL as TOTAL_TUNGGAKAN,
+STMT_TYPE,
+'TOP' SECTION,
+IXPRCS, IXPRDT
+FROM  DXI_STMK_STMS_MORTGAGE    
+UNION ALL
+SELECT
+sm.GCIF,
+sm.CIF,
+sm.CLMN2 as NOMOR_PINJAMAN_PEMBIAYAAN,
+sm.CURRENCY,
+ta.TRXN_ODR,
+NULL AS AWAL_AMOUNT,
+NULL AS SISA_POKOK,
+NULL as CREDIT_MATURITY_DATE,
+NULL as TOTAL_KEWAJIBAN,
+ta.KODE_TRANSAKSI,
+ta.TANGGAL_TRANSAKSI,
+ta.KETERANGAN,
+trim(ta.JUMLAH_TRANSAKSI) as JUMLAH_TRANSAKSI,
+trim(ta.SISA_HUTANG_POKOK) as SISA_HUTANG_POKOK,
+NULL as JUMLAH_POKOK,
+NULL as JUMLAH_BUNGA,
+NULL as JUMLAH_DENDA,
+NULL as TOTAL_TUNGGAKAN,
+COALESCE(ta.STMT_TYPE,'H') as STMT_TYPE,  
+'A' SECTION,
+sm.IXPRCS, sm.IXPRDT
+from   DXI_STMK_STMS_MORTGAGE sm LEFT JOIN DXI_STMK_STMS_MORTGAGE_TRXN_A ta
+ON sm.IXPRCS = ta.IXPRCS
+AND sm.GCIF = ta.GCIF
+AND sm.CLMN2 = ta.NOMOR_PINJAMAN_PEMBIAYAAN
+UNION ALL
+SELECT
+sm.GCIF,
+sm.CIF,
+sm.CLMN2 as NOMOR_PINJAMAN_PEMBIAYAAN,
+sm.CURRENCY,  
+tb.TRXN_ODR,
+NULL AS AWAL_AMOUNT,
+NULL AS SISA_POKOK,
+NULL as CREDIT_MATURITY_DATE,
+NULL as TOTAL_KEWAJIBAN,
+NULL as KODE_TRANSAKSI,
+tb.TGL_JATUH_TEMPO as TANGGAL_TRANSAKSI,
+NULL as KETERANGAN,
+NULL as JUMLAH_TRANSAKSI,
+NULL as SISA_HUTANG_POKOK,
+trim(tb.JUMLAH_POKOK) as JUMLAH_POKOK,
+trim(tb.JUMLAH_BUNGA) as JUMLAH_BUNGA,
+trim(tb.JUMLAH_DENDA) as JUMLAH_DENDA,
+trim(tb.TOTAL_TUNGGAKAN) as TOTAL_TUNGGAKAN,
+COALESCE(tb.STMT_TYPE,'H') as STMT_TYPE,  
+'B' SECTION,
+sm.IXPRCS, sm.IXPRDT
+from   DXI_STMK_STMS_MORTGAGE sm LEFT JOIN DXI_STMK_STMS_MORTGAGE_TRXN_B tb
+ON sm.IXPRCS = tb.IXPRCS
+AND sm.GCIF = tb.GCIF
+AND sm.CLMN2 = tb.NOMOR_PINJAMAN_PEMBIAYAAN
+UNION ALL
+select
+sm.GCIF,
+sm.CIF,
+sm.CLMN2 as NOMOR_PINJAMAN_PEMBIAYAAN,
+sm.CURRENCY,  
+ts.SRL_NO AS TRXN_ODR,
+NULL AS AWAL_AMOUNT,
+NULL AS SISA_POKOK,
+NULL as CREDIT_MATURITY_DATE,
+trim(ts.TOTAL_KEWAJIBAN) as TOTAL_KEWAJIBAN,
+NULL as KODE_TRANSAKSI,
+NULL as TANGGAL_TRANSAKSI,
+NULL as KETERANGAN,
+NULL as JUMLAH_TRANSAKSI,
+NULL as SISA_HUTANG_POKOK,  
+NULL as JUMLAH_POKOK,
+NULL as JUMLAH_BUNGA,
+NULL as JUMLAH_DENDA,
+NULL as TOTAL_TUNGGAKAN,
+ts.STMT_TYPE,
+'SUMRY' SECTION,
+sm.IXPRCS, sm.IXPRDT
+from   DXI_STMK_STMS_MORTGAGE sm LEFT JOIN DXI_STMK_STMS_MORTGAGE_TRXN_S ts
+ON sm.IXPRCS = ts.IXPRCS
+AND sm.GCIF = ts.GCIF
+AND sm.CLMN2 = ts.NOMOR_PINJAMAN_PEMBIAYAAN
+) tbl
+WHERE IXPRCS=$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND gcif = $(GCIF)
+--WHERE IXPRCS = 60129 AND IXPRDT='1' AND GCIF='G000760363']]></sqlstring>
+<columnInfo>
+<column type="string">
+<![CDATA[GCIF]]>
+</column>
+<column type="string">
+<![CDATA[CIF]]>
+</column>
+<column type="string">
+<![CDATA[NOMOR_PINJAMAN_PEMBIAYAAN]]>
+</column>
+<column type="string">
+<![CDATA[CURRENCY]]>
+</column>
+<column type="double">
+<![CDATA[TRXN_ODR]]>
+</column>
+<column type="string">
+<![CDATA[AWAL_AMOUNT]]>
+</column>
+<column type="string">
+<![CDATA[SISA_POKOK]]>
+</column>
+<column type="string">
+<![CDATA[CREDIT_MATURITY_DATE]]>
+</column>
+<column type="string">
+<![CDATA[TOTAL_KEWAJIBAN]]>
+</column>
+<column type="string">
+<![CDATA[KODE_TRANSAKSI]]>
+</column>
+<column type="string">
+<![CDATA[TANGGAL_TRANSAKSI]]>
+</column>
+<column type="string">
+<![CDATA[KETERANGAN]]>
+</column>
+<column type="string">
+<![CDATA[JUMLAH_TRANSAKSI]]>
+</column>
+<column type="string">
+<![CDATA[SISA_HUTANG_POKOK]]>
+</column>
+<column type="string">
+<![CDATA[JUMLAH_POKOK]]>
+</column>
+<column type="string">
+<![CDATA[JUMLAH_BUNGA]]>
+</column>
+<column type="string">
+<![CDATA[JUMLAH_DENDA]]>
+</column>
+<column type="string">
+<![CDATA[TOTAL_TUNGGAKAN]]>
+</column>
+<column type="string">
+<![CDATA[STMT_TYPE]]>
+</column>
+<column type="string">
+<![CDATA[SECTION]]>
+</column>
+<column type="double">
+<![CDATA[IXPRCS]]>
+</column>
+<column type="double">
+<![CDATA[IXPRDT]]>
+</column>
+</columnInfo>
+</uniform_sql>
+<variable  name="GCIF" source="Query: q_Mortgage_KPR" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Mortgage_KPR" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Mortgage_KPR" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query><query name="q_Giro_Master" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT * FROM (
+--SINGLE CURRENCY CONVENTIONAL
+SELECT CASE WHEN A.CURRENCY ='USD' THEN 1 ELSE 2 END AS CUR_ORD,
+A.IXPRCS,A.IXPRDT,B.CUSTOMER_NAME,B.ADDRESS1,B.ADDRESS2,B.ADDRESS3,
+B.ADDRESS4,B.ADDRESS5,B.ADDRESS6,B.ADDRESS7,B.ADDRESS8,B.LANGUAGE_FLAG,B.MULTICURRENCY_FLG,A.GCIF,B.ACCOUNT_NO,A.CURRENCY,'' AS PROFIT_SHARING_RATIO,
+
+to_char(trunc(trunc(ADD_MONTHS(SYSDATE,-1), 'MM') , 'MM'),'DD-') ||
+to_char(LAST_DAY(to_char(trunc(trunc(ADD_MONTHS(SYSDATE,-1), 'MM') , 'MM'),'DD-MON-YYYY')),'DD/MM/YYYY') stmt_to_dt,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PERVIOUS_BALANCE_AMOUNT,',','.'),'-',''))),2),
+'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''')||''||
+(CASE WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= 1 and  'Y'=$(WCL)   THEN ' CR' 
+WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= -1 and  'Y'=$(WCL)   THEN ' CL'
+WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= 1 and B.MULTICURRENCY_FLG='SK'  THEN ' CR'
+WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= -1 and B.MULTICURRENCY_FLG='SK'  THEN ' DR'
+ELSE '' END ) AS PERVIOUS_BALANCE_AMOUNT,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.AVERAGE_BALANCE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||''|| (CASE 
+WHEN sign(A.AVERAGE_BALANCE)= 1 AND  'Y'=$(WCL)  THEN ' CR'
+WHEN sign(A.AVERAGE_BALANCE)= -1 AND  'Y'=$(WCL)  THEN ' CL'
+WHEN sign(A.AVERAGE_BALANCE)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR'
+WHEN sign(A.AVERAGE_BALANCE)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR'
+WHEN sign(A.AVERAGE_BALANCE)= 1 THEN ' CR' 
+WHEN sign(A.AVERAGE_BALANCE)= -1  THEN ' DR'
+ELSE '' END ) 
+AS AVERAGE_BALANCE,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE((SELECT NVL(SUM(CASE WHEN DEBIT_KREDIT_FLAG='C' THEN TRXN_AMOUNT ELSE '' END),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS TOT_CREDIT_TRNX_AMT,
+(SELECT COUNT(CASE WHEN DEBIT_KREDIT_FLAG='C' THEN TRXN_AMOUNT ELSE '' END) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY) AS CNT_KREDIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.YEAR_PROFIT_SHARE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS YEAR_PROFIT_SHARE,
+to_char(round((TO_NUMBER(REPLACE(REPLACE((SELECT NVL(SUM(CASE WHEN DEBIT_KREDIT_FLAG='D' THEN TRXN_AMOUNT ELSE '' END),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS  TOT_DEBIT_TRNX_AMT,
+(SELECT COUNT(CASE WHEN DEBIT_KREDIT_FLAG='D' THEN TRXN_AMOUNT ELSE '' END) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY) AS CNT_DEBIT,
+
+(to_char(NVL(round((TO_NUMBER(REPLACE(REPLACE((SELECT MAX(TO_NUMBER((D.BALANCE_AMOUNT))) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2),0), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.'''))|| ''|| 
+(CASE WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND  'Y'=$(WCL)  THEN ' CR' 
+WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND  'Y'=$(WCL)  THEN ' CL' 
+ELSE '' END )
+ AS HIGHEST_BALANCE,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.ADMIN_FEE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS ADMIN_FEE,
+(to_char(round((TO_NUMBER(REPLACE(REPLACE((SELECT NVL(MIN(TO_NUMBER((D.BALANCE_AMOUNT))),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''')) ||''|| 
+(CASE 
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR'
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND  'Y'=$(WCL)  THEN ' CR'
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND  'Y'=$(WCL)  THEN ' CL'
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 THEN ' CR' 
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1  THEN ' DR' 
+ELSE '' END ) AS LOWEST_BALANCE,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PAID_PROFIT_SHARE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS PAID_PROFIT_SHARE,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PLAFOND,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS PLAFOND,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.ENDING_BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||''||
+(CASE 
+ WHEN sign(A.ENDING_BALANCE_AMOUNT)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= 1 AND  'Y'=$(WCL)  THEN ' CR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= -1 AND  'Y'=$(WCL)   THEN ' CL' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= 1 THEN ' CR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= -1  THEN ' DR' 
+ELSE '' END ) 
+AS ENDING_BALANCE_AMOUNT
+
+from DXI_GNR_ESTAT_CASA_BAL_KON A
+LEFT JOIN DXI_GNR_MASTER_BRK B ON A.GCIF=B.GCIF AND A.IXPRCS=B.IXPRCS and A.ACCOUNT_NO=B.ACCOUNT_NO
+--LEFT JOIN DXI_GNR_ESTAT_CASA_TRXN C ON A.GCIF=C.GCIF
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND A.ACCOUNT_NO=$(ACCOUNT_NO)
+AND B.MULTICURRENCY_FLG=$(CURRENCY)
+
+UNION ALL
+--SINGLE CURRENCY SHARIA
+SELECT CASE WHEN A.CURRENCY ='USD' THEN 1 ELSE 2 END AS CUR_ORD,
+ A.IXPRCS,A.IXPRDT,B.CUSTOMER_NAME,B.ADDRESS1,B.ADDRESS2,B.ADDRESS3,
+B.ADDRESS4,B.ADDRESS5,B.ADDRESS6,B.ADDRESS7,B.ADDRESS8,B.LANGUAGE_FLAG,B.MULTICURRENCY_FLG,A.GCIF,B.ACCOUNT_NO,A.CURRENCY,
+case when to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PROFIT_SHARING_RATIO,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''')='0,00' then '' else 
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PROFIT_SHARING_RATIO,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') end AS PROFIT_SHARING_RATIO,
+
+to_char(trunc(trunc(ADD_MONTHS(SYSDATE,-1), 'MM') , 'MM'),'DD-') ||
+to_char(LAST_DAY(to_char(trunc(trunc(ADD_MONTHS(SYSDATE,-1), 'MM') , 'MM'),'DD-MON-YYYY')),'DD/MM/YYYY') stmt_to_dt,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PERVIOUS_BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''')||''||
+(CASE WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= 1 and  'Y'=$(WCL)   THEN ' CR' 
+WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= -1 and  'Y'=$(WCL)   THEN ' CL'
+WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= 1 and B.MULTICURRENCY_FLG='SK'  THEN ' CR'
+WHEN sign(A.PERVIOUS_BALANCE_AMOUNT)= -1 and B.MULTICURRENCY_FLG='SK'  THEN ' DR'
+ELSE '' END ) AS PERVIOUS_BALANCE_AMOUNT,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.AVERAGE_BALANCE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||''|| (CASE 
+WHEN sign(A.AVERAGE_BALANCE)= 1 AND  'Y'=$(WCL)  THEN ' CR'
+WHEN sign(A.AVERAGE_BALANCE)= -1 AND  'Y'=$(WCL)  THEN ' CL'
+WHEN sign(A.AVERAGE_BALANCE)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR'
+WHEN sign(A.AVERAGE_BALANCE)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR'
+WHEN sign(A.AVERAGE_BALANCE)= 1 THEN ' CR' 
+WHEN sign(A.AVERAGE_BALANCE)= -1  THEN ' DR'
+ELSE '' END ) AS AVERAGE_BALANCE,
+
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE((SELECT NVL(SUM(CASE WHEN DEBIT_KREDIT_FLAG='C' THEN TRXN_AMOUNT ELSE '' END),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS TOT_CREDIT_TRNX_AMT,
+(SELECT COUNT(CASE WHEN DEBIT_KREDIT_FLAG='C' THEN TRXN_AMOUNT ELSE '' END) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY) AS CNT_KREDIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.YEAR_PROFIT_SHARE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS YEAR_PROFIT_SHARE,
+to_char(round((TO_NUMBER(REPLACE(REPLACE((SELECT NVL(SUM(CASE WHEN DEBIT_KREDIT_FLAG='D' THEN TRXN_AMOUNT ELSE '' END),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS  TOT_DEBIT_TRNX_AMT,
+(SELECT COUNT(CASE WHEN DEBIT_KREDIT_FLAG='D' THEN TRXN_AMOUNT ELSE '' END) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY) AS CNT_DEBIT,
+
+(to_char(NVL(round((TO_NUMBER(REPLACE(REPLACE((SELECT MAX(TO_NUMBER((D.BALANCE_AMOUNT)) )FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2),0), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.'''))|| ''|| 
+(CASE WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND  'Y'=$(WCL)  THEN ' CR' 
+WHEN sign((SELECT NVL(MAX(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND  'Y'=$(WCL)  THEN ' CL' 
+ELSE '' END )
+ AS HIGHEST_BALANCE,
+ 
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.ADMIN_FEE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS ADMIN_FEE,
+(to_char(round((TO_NUMBER(REPLACE(REPLACE((SELECT NVL(MIN(TO_NUMBER((D.BALANCE_AMOUNT))),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.'''))  || ''|| (CASE 
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR'
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 AND  'Y'=$(WCL)  THEN ' CR'
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1 AND  'Y'=$(WCL)  THEN ' CL'
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= 1 THEN ' CR' 
+WHEN sign((SELECT NVL(MIN(TO_NUMBER(D.BALANCE_AMOUNT)),0) FROM DXI_GNR_ESTAT_CASA_TRXN D
+WHERE D.IXPRCS=A.IXPRCS AND D.IXPRDT=A.IXPRDT AND D.GCIF=A.GCIF and D.ACCOUNT_NO=A.ACCOUNT_NO AND D.CURRENCY=A.CURRENCY))= -1  THEN ' DR' 
+ELSE '' END ) 
+AS LOWEST_BALANCE,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PAID_PROFIT_SHARE,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS PAID_PROFIT_SHARE,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.PLAFOND,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS PLAFOND,
+
+to_char(round((TO_NUMBER(REPLACE(REPLACE(A.ENDING_BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||''||
+(CASE 
+ WHEN sign(A.ENDING_BALANCE_AMOUNT)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= 1 AND  'Y'=$(WCL)  THEN ' CR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= -1 AND  'Y'=$(WCL)   THEN ' CL' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= 1 THEN ' CR' 
+WHEN sign(A.ENDING_BALANCE_AMOUNT)= -1  THEN ' DR' 
+ELSE '' END ) 
+AS ENDING_BALANCE_AMOUNT
+
+from DXI_GNR_ESTAT_CASA_BAL_SYA A
+LEFT JOIN DXI_GNR_MASTER_BSK B ON A.GCIF=B.GCIF AND A.IXPRCS=B.IXPRCS and A.ACCOUNT_NO=B.ACCOUNT_NO
+--LEFT JOIN DXI_GNR_ESTAT_CASA_TRXN C ON A.GCIF=C.GCIF
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND A.ACCOUNT_NO=$(ACCOUNT_NO)
+AND B.MULTICURRENCY_FLG=$(CURRENCY)
+) T
+ORDER BY CUR_ORD, CURRENCY]]></sqlstring>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: q_Giro_Master" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="CURRENCY" source="Query: q_Giro_Master" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CURRENCY" xtype="string">
+</variable>
+<variable  name="GCIF" source="Query: q_Giro_Master" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Giro_Master" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Giro_Master" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<variable  name="WCL" source="Query: q_Giro_Master" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="WCL" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query>
+<query name="q_Giro_Message" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<table>
+<alias><![CDATA[GIRO_NON_RETAIL_MSG_INFO_PENTING_MSTR]]></alias>
+<name><![CDATA[GIRO_NON_RETAIL_MSG_INFO_PENTING_MSTR]]></name>
+<issql><![CDATA[false]]></issql>
+<xlocation><![CDATA[15]]></xlocation>
+<ylocation><![CDATA[15]]></ylocation>
+<xScroll><![CDATA[0]]></xScroll>
+<yScroll><![CDATA[0]]></yScroll>
+</table>
+<where>
+<XBinaryCondition isnot="false" clause="" containsNull="false">
+<expression1>
+<expression type="Field">
+<![CDATA[GIRO_NON_RETAIL_MSG_INFO_PENTING_MSTR.ACTIVE_STATUS]]>
+</expression>
+</expression1>
+<expression2>
+<expression type="Value">
+<![CDATA['A']]>
+</expression>
+</expression2>
+<op><![CDATA[=]]></op>
+</XBinaryCondition>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT INFO_COLUMN_1,INFO_COLUMN_2,MESSAGE1,MESSAGE2,MESSAGE3 ,LAST_PAGE_MESSAGE1,LAST_PAGE_MESSAGE2,LAST_PAGE_MESSAGE3 ,LANGUAGE_FLG
+FROM GIRO_NON_RETAIL_MSG_INFO_PENTING_MSTR
+WHERE active_status = 'A']]></sqlstring>
+</uniform_sql>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query>
+<query name="q_Giro_Transaction" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT  TRXN_DATE, TRANSACTION_CODE, TRXN_DESCRIPTION2,TRXN_DESCRIPTION1 ,DEBIT, KREDIT, BALANCE_AMOUNT, SEQUENCE_TRXN FROM (
+--SINGLE CURRENCY CONVENTIONAL
+SELECT 
+TO_CHAR(TO_DATE(C.TRANSACTION_DATE, 'RRRRMMDD'),'DD/MM/YYYY') TRXN_DATE,C.TRANSACTION_CODE,C.TRXN_DESCRIPTION2,
+TRXN_DESCRIPTION1,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='D' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS DEBIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='C' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS KREDIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(C.BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||
+(CASE 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND  'Y'=$(WCL) THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND  'Y'=$(WCL)  THEN ' CL' 
+ELSE '' END )
+AS BALANCE_AMOUNT,
+C.SEQUENCE_TRXN
+from DXI_GNR_ESTAT_CASA_BAL_KON A
+JOIN DXI_GNR_MASTER_BRK B ON A.GCIF=B.GCIF AND A.IXPRCS=B.IXPRCS and A.ACCOUNT_NO=B.ACCOUNT_NO
+LEFT JOIN DXI_GNR_ESTAT_CASA_TRXN C ON A.GCIF=C.GCIF AND A.IXPRCS=C.IXPRCS AND A.CURRENCY=C.CURRENCY and A.ACCOUNT_NO=C.ACCOUNT_NO
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND B.MULTICURRENCY_FLG=$(CURRENCY) AND A.CURRENCY=$(CURR)  AND A.ACCOUNT_NO=$(ACCOUNT_NO) AND BALANCE_AMOUNT IS NOT NULL
+
+UNION ALL
+
+--SINGLE CURRENCY SHARIA
+SELECT 
+TO_CHAR(TO_DATE(C.TRANSACTION_DATE, 'RRRRMMDD'),'DD/MM/YYYY') TRXN_DATE,C.TRANSACTION_CODE,C.TRXN_DESCRIPTION2,
+TRXN_DESCRIPTION1,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='D' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS DEBIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='C' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS KREDIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(C.BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||
+(CASE 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND  'Y'=$(WCL) THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND  'Y'=$(WCL)  THEN ' CL' 
+ELSE '' END )
+
+AS BALANCE_AMOUNT,
+C.SEQUENCE_TRXN
+from DXI_GNR_ESTAT_CASA_BAL_SYA A
+JOIN DXI_GNR_MASTER_BSK B ON A.GCIF=B.GCIF AND A.IXPRCS=B.IXPRCS and A.ACCOUNT_NO=B.ACCOUNT_NO
+LEFT JOIN DXI_GNR_ESTAT_CASA_TRXN C ON A.GCIF=C.GCIF AND A.IXPRCS=C.IXPRCS AND A.CURRENCY=C.CURRENCY and A.ACCOUNT_NO=C.ACCOUNT_NO
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND B.MULTICURRENCY_FLG=$(CURRENCY) AND A.CURRENCY=$(CURR)  AND A.ACCOUNT_NO=$(ACCOUNT_NO) AND BALANCE_AMOUNT IS NOT NULL
+) T
+ORDER BY  TRXN_DATE,TO_NUMBER(T.SEQUENCE_TRXN)]]></sqlstring>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="CURR" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CURR" xtype="string">
+</variable>
+<variable  name="CURRENCY" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CURRENCY" xtype="string">
+</variable>
+<variable  name="GCIF" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<variable  name="WCL" source="Query: q_Giro_Transaction" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="WCL" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query>
+<query name="q_Giro_WCL" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<column>
+<![CDATA[tbl1.*]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TBL2.STMT_TO_DT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TBL2.COLUMNS]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TBL2.VALUE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT  T.STMT_TO_DT,
+CASE WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='MAXIMUM_CAPITAL' THEN 'MAKS MODAL/HISHSHAH MUSYARAKAH' 
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='MAXIMUM_CAPITAL' THEN 'MAXIMUM CAPITAL/HISHSHAH MUSYARAKAH' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='BANK_CAPITAL_PORTION' THEN 'PORSI MODAL/HISHSHAH BANK' 
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='BANK_CAPITAL_PORTION' THEN 'BANK CAPITAL PORTION/HISHSHAH' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='CUSTOMER_CAPITAL_PORTION' THEN 'PORSI MODAL/HISHSHAH NASABAH'
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='CUSTOMER_CAPITAL_PORTION' THEN 'CUSTOMER CAPITAL PORTION/HISHSHAH' 
+ELSE
+' ' END AS COLUMNS,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(TO_NUMBER(t.value),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS value
+FROM
+(SELECT tbl1.*, tbl2.stmt_to_dt,  
+tbl2.COLUMNS,
+tbl2.VALUE
+FROM
+(SELECT bs.GCIF, bs.IXPRCS, bs.IXPRDT, bs.PRODUCT_NAME, bs.PRODUCT_CODE, bs.LANGUAGE_FLAG, bs.MULTICURRENCY_FLG
+FROM DXI_GNR_ESTAT_CASA_BAL_SYA ca JOIN DXI_GNR_MASTER_BSK bs ON ca.GCIF = bs.GCIF AND ca.ACCOUNT_NO=bs.ACCOUNT_NO AND ca.IXPRCS = bs.IXPRCS
+WHERE bs.IXPRCS =$(PROCESS_ID) AND bs.IXPRDT=$(PRODUCT_ID) AND bs.GCIF=$(GCIF) AND bs.ACCOUNT_NO=$(ACCOUNT_NO) ) tbl1 JOIN 
+(SELECT * FROM  (SELECT pr.IXPRCS, pr.IXPRDT,
+to_char(trunc(trunc(ADD_MONTHS(SYSDATE,0), 'MM') , 'MM'),'DD/MM - ') ||
+to_char(LAST_DAY(to_char(trunc(trunc(ADD_MONTHS(SYSDATE,0), 'MM') , 'MM'),'DD-MON-YYYY')),'DD/MM') stmt_to_dt,
+pr.GCIF,
+pr.MAXIMUM_CAPITAL,
+pr.BANK_CAPITAL_PORTION,
+pr.CUSTOMER_CAPITAL_PORTION
+
+FROM DXI_GNR_ESTAT_PRK_SYA pr WHERE IXPRCS =$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND GCIF=$(GCIF) AND ACCOUNT_NO=$(ACCOUNT_NO) 
+) DATA
+UNPIVOT (
+  VALUE FOR COLUMNS IN (MAXIMUM_CAPITAL,BANK_CAPITAL_PORTION,CUSTOMER_CAPITAL_PORTION)
+) ) tbl2
+ON tbl1.GCIF = tbl2.GCIF
+AND tbl1.IXPRCS = tbl2.IXPRCS) T 
+
+UNION ALL
+
+SELECT  T.STMT_TO_DT,
+CASE WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='BANK_PROFIT_SHARING_RATIO' THEN 'NISBAH BANK' 
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='BANK_PROFIT_SHARING_RATIO' THEN 'BANK PROFIT SHARING RATIO' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='CUSTOMER_PROFIT_SHARING_RATIO' THEN 'NISBAH NASABAH' 
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='CUSTOMER_PROFIT_SHARING_RATIO' THEN 'CUSTOMER PROFIT SHARING RATIO' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='INCOME_MUSYARAKAH' THEN 'PENDAPATAN MUSYARAKAH'
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='INCOME_MUSYARAKAH' THEN 'INCOME MUSYARAKAH' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='BANK_PROFIT_SHARING' THEN 'BAGI HASIL BANK' 
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='BANK_PROFIT_SHARING' THEN 'BANK PROFIT SHARING' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='CUSTOMER_PROFIT_SHARING' THEN 'BAGI HASIL NASABAH' 
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='CUSTOMER_PROFIT_SHARING' THEN 'CUSTOMER PROFIT SHARING' 
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='CUSTOMER_OBLIGATION' THEN 'KEWAJIBAN NASABAH'
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='CUSTOMER_OBLIGATION' THEN 'CUSTOMER OBLIGATION' 
+ELSE
+' ' END AS COLUMNS,
+CASE WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='BANK_PROFIT_SHARING_RATIO' THEN t.value
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='BANK_PROFIT_SHARING_RATIO' THEN t.value
+WHEN T.LANGUAGE_FLAG=1 AND T.COLUMNS='CUSTOMER_PROFIT_SHARING_RATIO' THEN t.value
+WHEN T.LANGUAGE_FLAG=2 AND T.COLUMNS='CUSTOMER_PROFIT_SHARING_RATIO' THEN t.value
+Else
+to_char(round((TO_NUMBER(REPLACE(REPLACE(TO_NUMBER(replace(t.value,'%','')),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') END AS value
+FROM
+(SELECT tbl1.*, tbl2.stmt_to_dt,  
+tbl2.COLUMNS,
+tbl2.VALUE
+FROM
+(SELECT bs.GCIF, bs.IXPRCS, bs.IXPRDT, bs.PRODUCT_NAME, bs.PRODUCT_CODE, bs.LANGUAGE_FLAG, bs.MULTICURRENCY_FLG
+FROM DXI_GNR_ESTAT_CASA_BAL_SYA ca JOIN DXI_GNR_MASTER_BSK bs ON ca.GCIF = bs.GCIF AND ca.ACCOUNT_NO=bs.ACCOUNT_NO AND ca.IXPRCS = bs.IXPRCS
+WHERE bs.IXPRCS =$(PROCESS_ID) AND bs.IXPRDT=$(PRODUCT_ID) AND bs.GCIF=$(GCIF) AND bs.ACCOUNT_NO=$(ACCOUNT_NO) ) tbl1 JOIN 
+(SELECT * FROM  (SELECT pr.IXPRCS, pr.IXPRDT,
+'06/'||to_char(trunc(trunc(ADD_MONTHS(SYSDATE,-1), 'MM') , 'MM'),'MM - ') ||'05/'||
+to_char(LAST_DAY(to_char(trunc(trunc(ADD_MONTHS(SYSDATE,0), 'MM') , 'MM'),'DD-MON-YYYY')),'MM') stmt_to_dt,
+pr.GCIF,
+pr.BANK_PROFIT_SHARING_RATIO,
+pr.CUSTOMER_PROFIT_SHARING_RATIO,
+pr.INCOME_MUSYARAKAH,
+pr.BANK_PROFIT_SHARING,
+pr.CUSTOMER_PROFIT_SHARING,
+pr.CUSTOMER_OBLIGATION
+FROM DXI_GNR_ESTAT_PRK_SYA pr --WHERE IXPRCS ='60222' AND IXPRDT='7' AND GCIF='G908552789' 
+WHERE IXPRCS =$(PROCESS_ID) AND IXPRDT=$(PRODUCT_ID) AND GCIF=$(GCIF) AND ACCOUNT_NO=$(ACCOUNT_NO) 
+) DATA
+UNPIVOT (
+  VALUE FOR COLUMNS IN (BANK_PROFIT_SHARING_RATIO,CUSTOMER_PROFIT_SHARING_RATIO,INCOME_MUSYARAKAH,BANK_PROFIT_SHARING,CUSTOMER_PROFIT_SHARING,CUSTOMER_OBLIGATION)
+) ) tbl2
+ON tbl1.GCIF = tbl2.GCIF
+AND tbl1.IXPRCS = tbl2.IXPRCS) T]]></sqlstring>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: q_Giro_WCL" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="GCIF" source="Query: q_Giro_WCL" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Giro_WCL" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Giro_WCL" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+</query_jdbc>
+</query>
+<query name="q_Giro_Summary" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT 
+CASE WHEN A.CURRENCY='USD' THEN 1 ELSE 2 END CURR_ORD,
+A.GCIF,
+A.ACCOUNT_NO,A.CURRENCY,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(TO_NUMBER(A.BALANCE),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00',
+'NLS_NUMERIC_CHARACTERS='',.''') AS BALANCE,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(TO_NUMBER(A.IDR_BALANCE),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00',
+'NLS_NUMERIC_CHARACTERS='',.''') AS IDR_BALANCE,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(TO_NUMBER(B.EXCHANGE_RATE),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00',
+'NLS_NUMERIC_CHARACTERS='',.''') AS EXCHANGE_RATE,
+(select to_char(round((TO_NUMBER(REPLACE(REPLACE(TO_NUMBER(sum(A.IDR_BALANCE)),',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00',
+'NLS_NUMERIC_CHARACTERS='',.''') AS IDR_BALANCE FROM DXI_GNR_ESTAT_CASA A
+JOIN DXI_GNR_ESTAT_KURS_MASTER B ON A.CURRENCY=B.CHANGE_CURRENCY AND A.IXPRCS=B.IXPRCS
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) 
+) as TOT_IDR_BALANCE
+FROM DXI_GNR_ESTAT_CASA A
+JOIN DXI_GNR_ESTAT_KURS_MASTER B ON A.CURRENCY=B.CHANGE_CURRENCY AND A.IXPRCS=B.IXPRCS 
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND A.ACCOUNT_NO=$(ACCOUNT_NO) 
+ORDER BY CURR_ORD, A.CURRENCY]]></sqlstring>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: q_Giro_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="GCIF" source="Query: q_Giro_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Giro_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Giro_Summary" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+</query_jdbc>
+</query>
+<query name="q_Giro_Transaction1" type="jdbc" datasource="Maybank">
+<query_jdbc>
+<uniform_sql parse="false">
+<column>
+<![CDATA[TRXN_DATE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRANSACTION_CODE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRXN_DESCRIPTION2]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRXN_DESCRIPTION1]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[DEBIT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[KREDIT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[BALANCE_AMOUNT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[SEQUENCE_TRXN]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRXN_DATE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRANSACTION_CODE]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRXN_DESCRIPTION2]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[TRXN_DESCRIPTION1]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[DEBIT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[KREDIT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[BALANCE_AMOUNT]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<column>
+<![CDATA[SEQUENCE_TRXN]]>
+<alias><![CDATA[]]></alias>
+<type><![CDATA[]]></type>
+<table><![CDATA[]]></table>
+</column>
+<where>
+</where>
+<sortby></sortby>
+<groupby></groupby>
+<having>
+</having>
+<sqlstring parseResult="-1"><![CDATA[SELECT  TRXN_DATE, TRANSACTION_CODE, TRXN_DESCRIPTION2,TRXN_DESCRIPTION1 ,DEBIT, KREDIT, BALANCE_AMOUNT, SEQUENCE_TRXN FROM (
+--SINGLE CURRENCY CONVENTIONAL
+SELECT 
+TO_CHAR(TO_DATE(C.TRANSACTION_DATE, 'RRRRMMDD'),'DD/MM/YYYY') TRXN_DATE,C.TRANSACTION_CODE,C.TRXN_DESCRIPTION2,
+TRXN_DESCRIPTION1,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='D' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS DEBIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='C' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS KREDIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(C.BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''')  ||''||
+(CASE 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND  'Y'=$(WCL) THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND  'Y'=$(WCL)  THEN ' CL' 
+ELSE '' END )
+ AS BALANCE_AMOUNT,
+C.SEQUENCE_TRXN
+from DXI_GNR_ESTAT_CASA_BAL_KON A
+JOIN DXI_GNR_MASTER_BRK B ON A.GCIF=B.GCIF AND A.IXPRCS=B.IXPRCS and A.ACCOUNT_NO=B.ACCOUNT_NO
+LEFT JOIN DXI_GNR_ESTAT_CASA_TRXN C ON A.GCIF=C.GCIF AND A.IXPRCS=C.IXPRCS and A.ACCOUNT_NO=C.ACCOUNT_NO
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND B.MULTICURRENCY_FLG=$(CURRENCY) AND A.ACCOUNT_NO=$(ACCOUNT_NO) 
+AND BALANCE_AMOUNT IS NOT NULL
+
+UNION ALL
+
+--SINGLE CURRENCY SHARIA
+SELECT 
+TO_CHAR(TO_DATE(C.TRANSACTION_DATE, 'RRRRMMDD'),'DD/MM/YYYY') TRXN_DATE,C.TRANSACTION_CODE,C.TRXN_DESCRIPTION2,
+TRXN_DESCRIPTION1,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='D' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS DEBIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(CASE WHEN C.DEBIT_KREDIT_FLAG='C' THEN C.TRXN_AMOUNT ELSE '' END,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') AS KREDIT,
+to_char(round((TO_NUMBER(REPLACE(REPLACE(C.BALANCE_AMOUNT,',','.'),'-',''))),2), 'fm999G999G999G999G999G999G999G999G990D00','NLS_NUMERIC_CHARACTERS='',.''') ||''||
+(CASE 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND B.MULTICURRENCY_FLG='SK' THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND B.MULTICURRENCY_FLG='SK' THEN ' DR' 
+ WHEN sign(C.BALANCE_AMOUNT)= 1 AND  'Y'=$(WCL)  THEN ' CR' 
+ WHEN sign(C.BALANCE_AMOUNT)= -1 AND  'Y'=$(WCL) THEN ' CL' 
+ELSE '' END )
+AS BALANCE_AMOUNT,
+C.SEQUENCE_TRXN
+from DXI_GNR_ESTAT_CASA_BAL_SYA A
+JOIN DXI_GNR_MASTER_BSK B ON A.GCIF=B.GCIF AND A.IXPRCS=B.IXPRCS and A.ACCOUNT_NO=B.ACCOUNT_NO
+LEFT JOIN DXI_GNR_ESTAT_CASA_TRXN C ON A.GCIF=C.GCIF AND A.IXPRCS=C.IXPRCS and A.ACCOUNT_NO=C.ACCOUNT_NO
+WHERE A.IXPRCS=$(PROCESS_ID) AND A.IXPRDT=$(PRODUCT_ID) AND A.GCIF=$(GCIF) AND B.MULTICURRENCY_FLG=$(CURRENCY) AND A.ACCOUNT_NO=$(ACCOUNT_NO) 
+AND BALANCE_AMOUNT IS NOT NULL
+) T
+ORDER BY TRXN_DATE,TO_NUMBER(T.SEQUENCE_TRXN)]]></sqlstring>
+</uniform_sql>
+<variable  name="ACCOUNT_NO" source="Query: q_Giro_Transaction1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="ACCOUNT_NO" xtype="string">
+</variable>
+<variable  name="CURRENCY" source="Query: q_Giro_Transaction1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="CURRENCY" xtype="string">
+</variable>
+<variable  name="GCIF" source="Query: q_Giro_Transaction1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="GCIF" xtype="string">
+</variable>
+<variable  name="PROCESS_ID" source="Query: q_Giro_Transaction1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PROCESS_ID" xtype="string">
+</variable>
+<variable  name="PRODUCT_ID" source="Query: q_Giro_Transaction1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="PRODUCT_ID" xtype="string">
+</variable>
+<variable  name="WCL" source="Query: q_Giro_Transaction1" type="user" prompt="true" sortValue="true" embedded="false" multipleSelection="false" customization="false" label="WCL" xtype="string">
+</variable>
+<maxrows>0</maxrows>
+<timeout>0</timeout>
+<visible>true</visible>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+<metadata>
+<XMetaInfo>
+</XMetaInfo>
+</metadata>
+</query_jdbc>
+</query>
+</registry>
