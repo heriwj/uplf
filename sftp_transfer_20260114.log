@@ -1,0 +1,966 @@
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: Connecting to 10.220.42.56 port 22
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: Connection established
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: Remote version string: SSH-2.0-6.6.2.451 SSH Tectia Server
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: Local version string: SSH-2.0-JSCH-0.1.54
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: CheckCiphers: aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,3des-ctr,arcfour,arcfour128,arcfour256
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: CheckKexes: diffie-hellman-group14-sha1,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521
+Jan 14, 2026 2:09:43 PM sftpfiletransfer.JSchLogger log
+INFO: CheckSignatures: ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_KEXINIT sent
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_KEXINIT received
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group14-sha224@ssh.com,diffie-hellman-group14-sha256@ssh.com,diffie-hellman-group14-sha256,diffie-hellman-group15-sha256@ssh.com,diffie-hellman-group15-sha384@ssh.com,diffie-hellman-group16-sha384@ssh.com,diffie-hellman-group16-sha512@ssh.com,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512@ssh.com,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha224@ssh.com,diffie-hellman-group-exchange-sha384@ssh.com,diffie-hellman-group-exchange-sha512@ssh.com,curve25519-sha256@libssh.org,curve25519-sha256,ext-info-s
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: ssh-rsa
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: aes128-cbc,aes128-ctr,aes192-cbc,aes192-ctr,aes256-cbc,aes256-ctr,crypticore128@ssh.com,3des-cbc,seed-cbc@ssh.com
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: aes128-cbc,aes128-ctr,aes192-cbc,aes192-ctr,aes256-cbc,aes256-ctr,crypticore128@ssh.com,3des-cbc,seed-cbc@ssh.com
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: crypticore-mac@ssh.com,hmac-sha1
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: crypticore-mac@ssh.com,hmac-sha1
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: none,zlib
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: none,zlib
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: 
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server: 
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: ssh-rsa,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: aes128-ctr,aes128-cbc,3des-ctr,3des-cbc,blowfish-cbc,aes192-ctr,aes192-cbc,aes256-ctr,aes256-cbc
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: aes128-ctr,aes128-cbc,3des-ctr,3des-cbc,blowfish-cbc,aes192-ctr,aes192-cbc,aes256-ctr,aes256-cbc
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: hmac-md5,hmac-sha1,hmac-sha2-256,hmac-sha1-96,hmac-md5-96
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: hmac-md5,hmac-sha1,hmac-sha2-256,hmac-sha1-96,hmac-md5-96
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: none
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: none
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: 
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client: 
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: server->client aes128-ctr hmac-sha1 none
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: kex: client->server aes128-ctr hmac-sha1 none
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_KEXDH_INIT sent
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: expecting SSH_MSG_KEXDH_REPLY
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: ssh_rsa_verify: signature true
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+WARNING: Permanently added '10.220.42.56' (RSA) to the list of known hosts.
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_NEWKEYS sent
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_NEWKEYS received
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_SERVICE_REQUEST sent
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: SSH_MSG_SERVICE_ACCEPT received
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Authentications that can continue: gssapi-with-mic,publickey,keyboard-interactive,password
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Next authentication method: gssapi-with-mic
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Authentications that can continue: publickey,keyboard-interactive,password
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Next authentication method: publickey
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Authentications that can continue: keyboard-interactive,password
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Next authentication method: keyboard-interactive
+Jan 14, 2026 2:09:44 PM sftpfiletransfer.JSchLogger log
+INFO: Authentication succeeded (keyboard-interactive).
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002300971829_426013XXXXXX7024.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002300971829_426013XXXXXX7024.pdf | Time(ms): 178
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002300532084_515595XXXXXX5001.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002300532084_515595XXXXXX5001.pdf | Time(ms): 61
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500145037_552008XXXXXX6059.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500145037_552008XXXXXX6059.pdf | Time(ms): 38
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500396622_426013XXXXXX0023.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500396622_426013XXXXXX0023.pdf | Time(ms): 66
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500422477_356285XXXXXX1001.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500422477_356285XXXXXX1001.pdf | Time(ms): 83
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002400881217_404776XXXXXX7002.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002400881217_404776XXXXXX7002.pdf | Time(ms): 59
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000016513_426013XXXXXX7002.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000016513_426013XXXXXX7002.pdf | Time(ms): 67
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041769_515595XXXXXX7004.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041769_515595XXXXXX7004.pdf | Time(ms): 72
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350042742_426013XXXXXX3006.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350042742_426013XXXXXX3006.pdf | Time(ms): 69
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350044417_515595XXXXXX1009.pdf
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350044417_515595XXXXXX1009.pdf | Time(ms): 66
+Jan 14, 2026 2:09:45 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350044870_426013XXXXXX6001.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350044870_426013XXXXXX6001.pdf | Time(ms): 67
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350045422_426013XXXXXX1000.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350045422_426013XXXXXX1000.pdf | Time(ms): 58
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000020622_515595XXXXXX4014.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000020622_515595XXXXXX4014.pdf | Time(ms): 79
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350047204_426013XXXXXX8005.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350047204_426013XXXXXX8005.pdf | Time(ms): 74
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350048053_426013XXXXXX0003.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350048053_426013XXXXXX0003.pdf | Time(ms): 72
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000026363_515595XXXXXX3000.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000026363_515595XXXXXX3000.pdf | Time(ms): 54
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002700061676_552008XXXXXX7006.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002700061676_552008XXXXXX7006.pdf | Time(ms): 66
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002700069992_552008XXXXXX9010.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002700069992_552008XXXXXX9010.pdf | Time(ms): 72
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002500644093_356285XXXXXX2006.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002500644093_356285XXXXXX2006.pdf | Time(ms): 70
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002400631554_426013XXXXXX0027.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002400631554_426013XXXXXX0027.pdf | Time(ms): 70
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500666693_356285XXXXXX3007.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500666693_356285XXXXXX3007.pdf | Time(ms): 77
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500431726_515595XXXXXX3009.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500431726_515595XXXXXX3009.pdf | Time(ms): 68
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010012470792483_426013XXXXXX4022.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010012470792483_426013XXXXXX4022.pdf | Time(ms): 59
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010081220814947_552008XXXXXX4016.pdf
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010081220814947_552008XXXXXX4016.pdf | Time(ms): 58
+Jan 14, 2026 2:09:46 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010101700977681_404776XXXXXX0025.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010101700977681_404776XXXXXX0025.pdf | Time(ms): 66
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500409177_356285XXXXXX2016.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500409177_356285XXXXXX2016.pdf | Time(ms): 93
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002600753216_552008XXXXXX6016.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002600753216_552008XXXXXX6016.pdf | Time(ms): 75
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500661629_426013XXXXXX5028.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500661629_426013XXXXXX5028.pdf | Time(ms): 71
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010345130002202_426013XXXXXX0008.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010345130002202_426013XXXXXX0008.pdf | Time(ms): 51
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020430000999691_426013XXXXXX0013.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020430000999691_426013XXXXXX0013.pdf | Time(ms): 63
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020150000170891_515595XXXXXX6012.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020150000170891_515595XXXXXX6012.pdf | Time(ms): 58
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021211400003568_426013XXXXXX3008.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021211400003568_426013XXXXXX3008.pdf | Time(ms): 75
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460017329_426013XXXXXX4003.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460017329_426013XXXXXX4003.pdf | Time(ms): 78
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460018368_426013XXXXXX0000.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460018368_426013XXXXXX0000.pdf | Time(ms): 68
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021211720008594_515595XXXXXX2012.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021211720008594_515595XXXXXX2012.pdf | Time(ms): 56
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010250608176_552008XXXXXX8002.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010250608176_552008XXXXXX8002.pdf | Time(ms): 74
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000079149_552008XXXXXX8041.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000079149_552008XXXXXX8041.pdf | Time(ms): 66
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000152037_552008XXXXXX3019.pdf
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000152037_552008XXXXXX3019.pdf | Time(ms): 69
+Jan 14, 2026 2:09:47 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020091840330578_356285XXXXXX2018.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020091840330578_356285XXXXXX2018.pdf | Time(ms): 79
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020441670001726_552008XXXXXX1007.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020441670001726_552008XXXXXX1007.pdf | Time(ms): 59
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030162550001192_426013XXXXXX0003.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030162550001192_426013XXXXXX0003.pdf | Time(ms): 67
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1051450170002920_426013XXXXXX1007.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1051450170002920_426013XXXXXX1007.pdf | Time(ms): 141
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060000000002522_552008XXXXXX5014.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060000000002522_552008XXXXXX5014.pdf | Time(ms): 68
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060060000478726_552008XXXXXX9028.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060060000478726_552008XXXXXX9028.pdf | Time(ms): 53
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1051450000015332_426013XXXXXX4004.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1051450000015332_426013XXXXXX4004.pdf | Time(ms): 65
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1051450000018484_515595XXXXXX3004.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1051450000018484_515595XXXXXX3004.pdf | Time(ms): 65
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010830990250_552008XXXXXX7016.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010830990250_552008XXXXXX7016.pdf | Time(ms): 52
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500595280_426013XXXXXX2019.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500595280_426013XXXXXX2019.pdf | Time(ms): 72
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010000997184_404776XXXXXX8004.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010000997184_404776XXXXXX8004.pdf | Time(ms): 78
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060060000552975_552008XXXXXX7012.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060060000552975_552008XXXXXX7012.pdf | Time(ms): 108
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460023517_426013XXXXXX0007.pdf
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460023517_426013XXXXXX0007.pdf | Time(ms): 68
+Jan 14, 2026 2:09:48 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021211510003136_426013XXXXXX9001.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021211510003136_426013XXXXXX9001.pdf | Time(ms): 121
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021211720006820_426013XXXXXX2000.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021211720006820_426013XXXXXX2000.pdf | Time(ms): 58
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002600004750_552008XXXXXX5026.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002600004750_552008XXXXXX5026.pdf | Time(ms): 63
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002700070198_356285XXXXXX0028.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002700070198_356285XXXXXX0028.pdf | Time(ms): 72
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010840448349_404776XXXXXX7000.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010840448349_404776XXXXXX7000.pdf | Time(ms): 76
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500509844_356285XXXXXX7000.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500509844_356285XXXXXX7000.pdf | Time(ms): 90
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500547877_426013XXXXXX0030.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500547877_426013XXXXXX0030.pdf | Time(ms): 69
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010000647870_404776XXXXXX5010.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010000647870_404776XXXXXX5010.pdf | Time(ms): 95
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010040000000069_552008XXXXXX3031.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010040000000069_552008XXXXXX3031.pdf | Time(ms): 63
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010000009402_552008XXXXXX9006.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010000009402_552008XXXXXX9006.pdf | Time(ms): 87
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500482786_404776XXXXXX4003.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500482786_404776XXXXXX4003.pdf | Time(ms): 61
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002600770632_552008XXXXXX9010.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002600770632_552008XXXXXX9010.pdf | Time(ms): 71
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000270177_552008XXXXXX9027.pdf
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000270177_552008XXXXXX9027.pdf | Time(ms): 62
+Jan 14, 2026 2:09:49 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002700067590_552008XXXXXX9019.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002700067590_552008XXXXXX9019.pdf | Time(ms): 60
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500186379_552008XXXXXX3006.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500186379_552008XXXXXX3006.pdf | Time(ms): 67
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040010820002466_515595XXXXXX7017.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040010820002466_515595XXXXXX7017.pdf | Time(ms): 62
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1035375370001110_426013XXXXXX1008.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1035375370001110_426013XXXXXX1008.pdf | Time(ms): 76
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031050000014528_356285XXXXXX9011.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031050000014528_356285XXXXXX9011.pdf | Time(ms): 90
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031284160000940_552008XXXXXX2012.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031284160000940_552008XXXXXX2012.pdf | Time(ms): 60
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031284160001013_442374XXXXXX0002.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031284160001013_442374XXXXXX0002.pdf | Time(ms): 82
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021289990011373_426013XXXXXX8002.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021289990011373_426013XXXXXX8002.pdf | Time(ms): 87
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460019580_426013XXXXXX0008.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460019580_426013XXXXXX0008.pdf | Time(ms): 81
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021960000001535_426013XXXXXX5015.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021960000001535_426013XXXXXX5015.pdf | Time(ms): 71
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020870000001107_552008XXXXXX8008.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020870000001107_552008XXXXXX8008.pdf | Time(ms): 70
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040010000004647_552008XXXXXX5003.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040010000004647_552008XXXXXX5003.pdf | Time(ms): 68
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040010820002466_426013XXXXXX5003.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040010820002466_426013XXXXXX5003.pdf | Time(ms): 69
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031381340002315_426013XXXXXX4003.pdf
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031381340002315_426013XXXXXX4003.pdf | Time(ms): 63
+Jan 14, 2026 2:09:50 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020150000298049_404776XXXXXX0000.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020150000298049_404776XXXXXX0000.pdf | Time(ms): 81
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020030000002536_356285XXXXXX7008.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020030000002536_356285XXXXXX7008.pdf | Time(ms): 93
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000020747_426013XXXXXX2004.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000020747_426013XXXXXX2004.pdf | Time(ms): 64
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460006785_356285XXXXXX0009.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460006785_356285XXXXXX0009.pdf | Time(ms): 73
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010006600847621_552008XXXXXX1027.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010006600847621_552008XXXXXX1027.pdf | Time(ms): 57
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002300871326_356285XXXXXX4001.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002300871326_356285XXXXXX4001.pdf | Time(ms): 69
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500500173_426013XXXXXX4025.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500500173_426013XXXXXX4025.pdf | Time(ms): 64
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010830243460_552008XXXXXX5011.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010830243460_552008XXXXXX5011.pdf | Time(ms): 58
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010101700260146_552008XXXXXX9048.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010101700260146_552008XXXXXX9048.pdf | Time(ms): 57
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010340000053773_515595XXXXXX3017.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010340000053773_515595XXXXXX3017.pdf | Time(ms): 74
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000014351_404776XXXXXX7033.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000014351_404776XXXXXX7033.pdf | Time(ms): 78
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000203871_404776XXXXXX7009.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000203871_404776XXXXXX7009.pdf | Time(ms): 58
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010345020001892_426013XXXXXX7001.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010345020001892_426013XXXXXX7001.pdf | Time(ms): 57
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010345020002080_426013XXXXXX3009.pdf
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010345020002080_426013XXXXXX3009.pdf | Time(ms): 59
+Jan 14, 2026 2:09:51 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010101850853344_426013XXXXXX7005.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010101850853344_426013XXXXXX7005.pdf | Time(ms): 77
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010101850923857_426013XXXXXX5004.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010101850923857_426013XXXXXX5004.pdf | Time(ms): 88
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500345231_426013XXXXXX6005.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500345231_426013XXXXXX6005.pdf | Time(ms): 64
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010040000050072_442374XXXXXX5004.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010040000050072_442374XXXXXX5004.pdf | Time(ms): 73
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010006600779048_426013XXXXXX6034.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010006600779048_426013XXXXXX6034.pdf | Time(ms): 69
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500460592_426013XXXXXX2033.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500460592_426013XXXXXX2033.pdf | Time(ms): 43
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040520000510674_552008XXXXXX5023.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040520000510674_552008XXXXXX5023.pdf | Time(ms): 76
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040021060551765_404776XXXXXX7026.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040021060551765_404776XXXXXX7026.pdf | Time(ms): 67
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031050000022562_426013XXXXXX3026.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031050000022562_426013XXXXXX3026.pdf | Time(ms): 75
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030162670005065_426013XXXXXX4006.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030162670005065_426013XXXXXX4006.pdf | Time(ms): 65
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000010920_426013XXXXXX9009.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000010920_426013XXXXXX9009.pdf | Time(ms): 75
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350033865_426013XXXXXX6001.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350033865_426013XXXXXX6001.pdf | Time(ms): 70
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350034350_426013XXXXXX7009.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350034350_426013XXXXXX7009.pdf | Time(ms): 69
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1035375370002720_426013XXXXXX2041.pdf
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1035375370002720_426013XXXXXX2041.pdf | Time(ms): 74
+Jan 14, 2026 2:09:52 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1035375370002746_356285XXXXXX7005.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1035375370002746_356285XXXXXX7005.pdf | Time(ms): 80
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030502340851333_552008XXXXXX2009.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030502340851333_552008XXXXXX2009.pdf | Time(ms): 82
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031050000205894_552008XXXXXX5029.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031050000205894_552008XXXXXX5029.pdf | Time(ms): 59
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030541440000110_552008XXXXXX8022.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030541440000110_552008XXXXXX8022.pdf | Time(ms): 85
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031284160001310_426013XXXXXX9002.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031284160001310_426013XXXXXX9002.pdf | Time(ms): 68
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002500959269_552008XXXXXX4006.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002500959269_552008XXXXXX4006.pdf | Time(ms): 65
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002700058326_552008XXXXXX2017.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002700058326_552008XXXXXX2017.pdf | Time(ms): 63
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002700059886_552008XXXXXX8014.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002700059886_552008XXXXXX8014.pdf | Time(ms): 69
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002600005799_552008XXXXXX9018.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002600005799_552008XXXXXX9018.pdf | Time(ms): 86
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020091840330578_404776XXXXXX1015.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020091840330578_404776XXXXXX1015.pdf | Time(ms): 84
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020439990002846_515595XXXXXX9000.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020439990002846_515595XXXXXX9000.pdf | Time(ms): 62
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020450000010943_552008XXXXXX1003.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020450000010943_552008XXXXXX1003.pdf | Time(ms): 68
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020030730003812_515595XXXXXX2001.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020030730003812_515595XXXXXX2001.pdf | Time(ms): 67
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500626200_404776XXXXXX8003.pdf
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500626200_404776XXXXXX8003.pdf | Time(ms): 75
+Jan 14, 2026 2:09:53 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100730867938_552008XXXXXX2023.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100730867938_552008XXXXXX2023.pdf | Time(ms): 68
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000203871_552008XXXXXX7035.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000203871_552008XXXXXX7035.pdf | Time(ms): 64
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010340000036760_426013XXXXXX9000.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010340000036760_426013XXXXXX9000.pdf | Time(ms): 73
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040021060551781_552008XXXXXX1053.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040021060551781_552008XXXXXX1053.pdf | Time(ms): 69
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040021060598543_515595XXXXXX4008.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040021060598543_515595XXXXXX4008.pdf | Time(ms): 54
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040020000548188_552008XXXXXX8011.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040020000548188_552008XXXXXX8011.pdf | Time(ms): 71
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040020000996767_515595XXXXXX7001.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040020000996767_515595XXXXXX7001.pdf | Time(ms): 72
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1011660230001238_426013XXXXXX5006.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1011660230001238_426013XXXXXX5006.pdf | Time(ms): 71
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020000000378798_404776XXXXXX9003.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020000000378798_404776XXXXXX9003.pdf | Time(ms): 54
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020000000390033_552008XXXXXX2023.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020000000390033_552008XXXXXX2023.pdf | Time(ms): 65
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030240000004410_426013XXXXXX7001.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030240000004410_426013XXXXXX7001.pdf | Time(ms): 73
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350040845_515595XXXXXX2026.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350040845_515595XXXXXX2026.pdf | Time(ms): 55
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041306_426013XXXXXX5004.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041306_426013XXXXXX5004.pdf | Time(ms): 81
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041603_426013XXXXXX9004.pdf
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041603_426013XXXXXX9004.pdf | Time(ms): 74
+Jan 14, 2026 2:09:54 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350042130_426013XXXXXX0004.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350042130_426013XXXXXX0004.pdf | Time(ms): 75
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350044458_426013XXXXXX4004.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350044458_426013XXXXXX4004.pdf | Time(ms): 74
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000020036_515595XXXXXX2004.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000020036_515595XXXXXX2004.pdf | Time(ms): 60
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000022156_426013XXXXXX0006.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000022156_426013XXXXXX0006.pdf | Time(ms): 67
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021210000009843_426013XXXXXX6016.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021210000009843_426013XXXXXX6016.pdf | Time(ms): 66
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000026033_515595XXXXXX7000.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000026033_515595XXXXXX7000.pdf | Time(ms): 61
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000026322_426013XXXXXX1006.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000026322_426013XXXXXX1006.pdf | Time(ms): 66
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000217970_356285XXXXXX7006.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000217970_356285XXXXXX7006.pdf | Time(ms): 69
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020150000129129_356285XXXXXX4004.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020150000129129_356285XXXXXX4004.pdf | Time(ms): 93
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020224340000405_426013XXXXXX7008.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020224340000405_426013XXXXXX7008.pdf | Time(ms): 56
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010340000029492_442373XXXXXX3022.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010340000029492_442373XXXXXX3022.pdf | Time(ms): 59
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010100000961874_552008XXXXXX9030.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010100000961874_552008XXXXXX9030.pdf | Time(ms): 68
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1035375370001110_515595XXXXXX6007.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1035375370001110_515595XXXXXX6007.pdf | Time(ms): 66
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030540000014768_426013XXXXXX5005.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030540000014768_426013XXXXXX5005.pdf | Time(ms): 53
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030470000002433_552008XXXXXX4046.pdf
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030470000002433_552008XXXXXX4046.pdf | Time(ms): 64
+Jan 14, 2026 2:09:55 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031284160001112_426013XXXXXX3000.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031284160001112_426013XXXXXX3000.pdf | Time(ms): 69
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031284160001161_426013XXXXXX7007.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031284160001161_426013XXXXXX7007.pdf | Time(ms): 85
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000026355_515595XXXXXX0006.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000026355_515595XXXXXX0006.pdf | Time(ms): 54
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002401000841_552008XXXXXX3026.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002401000841_552008XXXXXX3026.pdf | Time(ms): 69
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002500258639_515595XXXXXX7000.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002500258639_515595XXXXXX7000.pdf | Time(ms): 52
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500646380_426013XXXXXX8013.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500646380_426013XXXXXX8013.pdf | Time(ms): 69
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500432971_356285XXXXXX7017.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500432971_356285XXXXXX7017.pdf | Time(ms): 62
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500433003_426013XXXXXX7042.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500433003_426013XXXXXX7042.pdf | Time(ms): 61
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010006600507696_552008XXXXXX1030.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010006600507696_552008XXXXXX1030.pdf | Time(ms): 71
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030000000004293_545299XXXXXX8002.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030000000004293_545299XXXXXX8002.pdf | Time(ms): 66
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030164040002244_515595XXXXXX4008.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030164040002244_515595XXXXXX4008.pdf | Time(ms): 62
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000013650_426013XXXXXX5007.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000013650_426013XXXXXX5007.pdf | Time(ms): 83
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350040480_426013XXXXXX4005.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350040480_426013XXXXXX4005.pdf | Time(ms): 60
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350040662_552008XXXXXX1009.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350040662_552008XXXXXX1009.pdf | Time(ms): 60
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041744_426013XXXXXX4005.pdf
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041744_426013XXXXXX4005.pdf | Time(ms): 61
+Jan 14, 2026 2:09:56 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350043740_515595XXXXXX6006.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350043740_515595XXXXXX6006.pdf | Time(ms): 63
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000018717_356285XXXXXX3004.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000018717_356285XXXXXX3004.pdf | Time(ms): 88
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000019905_515595XXXXXX2009.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000019905_515595XXXXXX2009.pdf | Time(ms): 50
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350047675_356285XXXXXX5016.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350047675_356285XXXXXX5016.pdf | Time(ms): 112
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350049739_426013XXXXXX0003.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350049739_426013XXXXXX0003.pdf | Time(ms): 70
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350052154_515595XXXXXX7009.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350052154_515595XXXXXX7009.pdf | Time(ms): 53
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460009326_426013XXXXXX4002.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460009326_426013XXXXXX4002.pdf | Time(ms): 68
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460019754_426013XXXXXX1006.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460019754_426013XXXXXX1006.pdf | Time(ms): 75
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1021289990012520_426013XXXXXX1006.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1021289990012520_426013XXXXXX1006.pdf | Time(ms): 80
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460021727_426013XXXXXX1008.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460021727_426013XXXXXX1008.pdf | Time(ms): 84
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762710003566_552008XXXXXX5009.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762710003566_552008XXXXXX5009.pdf | Time(ms): 83
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350014774_515595XXXXXX9005.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350014774_515595XXXXXX9005.pdf | Time(ms): 81
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1031890000002217_426013XXXXXX6008.pdf
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1031890000002217_426013XXXXXX6008.pdf | Time(ms): 74
+Jan 14, 2026 2:09:57 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020000000380992_426013XXXXXX0009.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020000000380992_426013XXXXXX0009.pdf | Time(ms): 82
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020031590005624_426013XXXXXX0009.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020031590005624_426013XXXXXX0009.pdf | Time(ms): 83
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020440150003145_552008XXXXXX1029.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020440150003145_552008XXXXXX1029.pdf | Time(ms): 67
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1011975210000467_515595XXXXXX5002.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1011975210000467_515595XXXXXX5002.pdf | Time(ms): 77
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030244430001061_426013XXXXXX5013.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030244430001061_426013XXXXXX5013.pdf | Time(ms): 66
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030162670004894_426013XXXXXX2010.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030162670004894_426013XXXXXX2010.pdf | Time(ms): 68
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030241710003668_552008XXXXXX0004.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030241710003668_552008XXXXXX0004.pdf | Time(ms): 57
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350038633_552008XXXXXX1005.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350038633_552008XXXXXX1005.pdf | Time(ms): 83
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350039193_426013XXXXXX2009.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350039193_426013XXXXXX2009.pdf | Time(ms): 115
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041116_515595XXXXXX8007.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041116_515595XXXXXX8007.pdf | Time(ms): 101
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000015317_426013XXXXXX5000.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000015317_426013XXXXXX5000.pdf | Time(ms): 56
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041462_515595XXXXXX8008.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041462_515595XXXXXX8008.pdf | Time(ms): 55
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041710_426013XXXXXX8000.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041710_426013XXXXXX8000.pdf | Time(ms): 80
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041769_426013XXXXXX0002.pdf
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041769_426013XXXXXX0002.pdf | Time(ms): 61
+Jan 14, 2026 2:09:58 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350041785_426013XXXXXX7004.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350041785_426013XXXXXX7004.pdf | Time(ms): 58
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350042973_426013XXXXXX0002.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350042973_426013XXXXXX0002.pdf | Time(ms): 72
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350044383_426013XXXXXX5003.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350044383_426013XXXXXX5003.pdf | Time(ms): 56
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762350044771_515595XXXXXX2002.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762350044771_515595XXXXXX2002.pdf | Time(ms): 67
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000018394_426013XXXXXX6003.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022320000018394_426013XXXXXX6003.pdf | Time(ms): 50
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022420000000770_515595XXXXXX0002.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1022420000000770_515595XXXXXX0002.pdf | Time(ms): 74
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1020762460019457_426013XXXXXX9000.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1020762460019457_426013XXXXXX9000.pdf | Time(ms): 71
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1040020900158971_552008XXXXXX9016.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1040020900158971_552008XXXXXX9016.pdf | Time(ms): 72
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060440000481567_426013XXXXXX3000.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060440000481567_426013XXXXXX3000.pdf | Time(ms): 74
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1052290000954216_515595XXXXXX0016.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1052290000954216_515595XXXXXX0016.pdf | Time(ms): 64
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060070990275115_426013XXXXXX4012.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060070990275115_426013XXXXXX4012.pdf | Time(ms): 92
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060060000136324_356285XXXXXX6000.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060060000136324_356285XXXXXX6000.pdf | Time(ms): 68
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1051451020002888_426013XXXXXX8009.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1051451020002888_426013XXXXXX8009.pdf | Time(ms): 61
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1060060000442334_356285XXXXXX0003.pdf
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1060060000442334_356285XXXXXX0003.pdf | Time(ms): 75
+Jan 14, 2026 2:09:59 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500518779_426013XXXXXX8021.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500518779_426013XXXXXX8021.pdf | Time(ms): 71
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500520585_426013XXXXXX9030.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500520585_426013XXXXXX9030.pdf | Time(ms): 78
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500542399_426013XXXXXX3013.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500542399_426013XXXXXX3013.pdf | Time(ms): 67
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002400068146_552008XXXXXX6036.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002400068146_552008XXXXXX6036.pdf | Time(ms): 60
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002400266377_515595XXXXXX0006.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002400266377_515595XXXXXX0006.pdf | Time(ms): 80
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002300584531_552008XXXXXX2010.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002300584531_552008XXXXXX2010.pdf | Time(ms): 98
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500605642_552008XXXXXX6004.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500605642_552008XXXXXX6004.pdf | Time(ms): 75
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010010000107883_404776XXXXXX1007.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010010000107883_404776XXXXXX1007.pdf | Time(ms): 82
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010005500478412_426013XXXXXX8015.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010005500478412_426013XXXXXX8015.pdf | Time(ms): 69
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030241710004435_515595XXXXXX4016.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030241710004435_515595XXXXXX4016.pdf | Time(ms): 71
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1010002600002507_552008XXXXXX0023.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1010002600002507_552008XXXXXX0023.pdf | Time(ms): 74
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030164070004748_426013XXXXXX0003.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030164070004748_426013XXXXXX0003.pdf | Time(ms): 68
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1030240000004063_426013XXXXXX7008.pdf
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: END upload -> 1030240000004063_426013XXXXXX7008.pdf | Time(ms): 64
+Jan 14, 2026 2:10:00 PM sftpfiletransfer.SFTPFile executeTransfer
+INFO: START upload -> 1022320000018287_426013XXXXXX1004.pdf
